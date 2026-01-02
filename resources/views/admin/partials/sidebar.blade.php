@@ -4,7 +4,7 @@
 
 <aside class="sidebar">
   <div class="brand">
-    <img src="{{ asset('admin/assets/img/logo.svg') }}" alt="Logo">
+    <img src="{{ asset('backend/assets/img/logo.svg') }}" alt="Logo">
     <div class="title">
       <strong>PSB Darussalam Al-Hafidz</strong>
       <span>Admin Panel</span>

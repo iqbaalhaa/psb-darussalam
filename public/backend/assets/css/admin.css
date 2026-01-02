@@ -582,3 +582,126 @@ th {
         gap: 12px;
     }
 }
+/* AUTH (Login) */
+.auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+}
+
+.auth-card {
+    width: min(520px, 100%);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: linear-gradient(
+        180deg,
+        rgba(148, 163, 184, 0.06),
+        rgba(148, 163, 184, 0.03)
+    );
+    box-shadow: var(--shadow);
+    padding: 16px;
+}
+
+.auth-brand {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 6px 6px 12px;
+}
+.auth-brand img {
+    width: 44px;
+    height: 44px;
+}
+.auth-brand h1 {
+    margin: 0;
+    font-size: 16px;
+    letter-spacing: 0.2px;
+}
+.auth-brand p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.auth-alert {
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 14px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 13px;
+    margin: 8px 6px 12px;
+}
+
+.auth-form {
+    padding: 0 6px 6px;
+}
+
+.auth-label {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin: 0 0 8px;
+}
+
+.auth-field {
+    border: 1px solid var(--border);
+    background: rgba(148, 163, 184, 0.06);
+    border-radius: 14px;
+    padding: 10px 12px;
+}
+.auth-field input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+}
+
+.auth-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 1px solid var(--border);
+    background: rgba(148, 163, 184, 0.06);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.auth-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.auth-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 13px;
+}
+.auth-check input {
+    accent-color: var(--primary);
+}
+
+.auth-link {
+    color: var(--info);
+    font-size: 13px;
+}
+
+.auth-note {
+    margin-top: 14px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+}

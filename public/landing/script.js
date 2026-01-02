@@ -132,19 +132,19 @@ function initForm() {
     btnPrefill?.addEventListener("click", () => {
         form.nama.value = "Ahmad Fulan";
         form.jenjang.value = "MA";
-        form.wali.value = "Bapak Fulan";
+        form.email.value = "ahmad@example.com";
+        form.password.value = "password123";
         form.wa.value = "081234567890";
-        form.domisili.value = "Kec. Contoh, Kota Jambi";
         showMessage(
             "Contoh data sudah diisi. Silakan ubah sesuai data Anda.",
             "info"
         );
     });
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const required = ["nama", "jenjang", "wali", "wa", "domisili"];
+        const required = ["nama", "jenjang", "email", "password", "wa"];
         const missing = required.filter(
             (name) => !String(form[name].value || "").trim()
         );
@@ -155,25 +155,81 @@ function initForm() {
             return;
         }
 
-        const code =
-            "PSB-" + Math.random().toString(36).slice(2, 7).toUpperCase();
+        showMessage("Mengirim data...", "info");
 
-        showMessage(
-            `Pendaftaran diterima. Kode Anda: ${code}. Admin PSB DARUSSALAM AL-HAFIDZ akan menghubungi via WhatsApp.`,
-            "ok"
-        );
+        try {
+            const formData = new FormData(form);
+            const token = document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute("content");
 
-        const text =
-            `Assalamu’alaikum, saya sudah mendaftar PSB (MA) DARUSSALAM AL-HAFIDZ.\n` +
-            `Kode: ${code}\n` +
-            `Nama calon santri: ${form.nama.value}\n` +
-            `Jenjang: MA\n` +
-            `Nama wali: ${form.wali.value}\n` +
-            `Domisili: ${form.domisili.value}\n` +
-            `Mohon info langkah selanjutnya (upload berkas & jadwal tes).`;
+            if (!token) {
+                showMessage(
+                    "Token keamanan tidak ditemukan. Silakan refresh halaman.",
+                    "warn"
+                );
+                return;
+            }
 
-        window.open(buildWaLink(text), "_blank", "noopener,noreferrer");
-        form.reset();
+            const response = await fetch("/register", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": token,
+                    Accept: "application/json",
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(data.message, "ok");
+                form.reset();
+
+                // SweetAlert Success & Redirect to Login
+                Swal.fire({
+                    title: "Pendaftaran Berhasil!",
+                    text: "Silakan login menggunakan email dan password yang telah didaftarkan untuk melengkapi berkas.",
+                    icon: "success",
+                    confirmButtonText: "Login Sekarang",
+                    confirmButtonColor: "#0f766e",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Scroll to login section or redirect to login page if separate
+                        // For now, assuming login form is on the same page (in footer/modal) or just focus
+                        // But user request implies redirect to login/dashboard flow.
+                        // Since login form is on the same page (L714-729), we can scroll to it.
+                        // Or better, reload page or trigger login modal if exists.
+                        // Based on user request: "arahkan santri untuk login"
+
+                        // Let's scroll to the login form area
+                        const loginSection = document.getElementById("login"); // Assuming section ID or similar
+                        if (loginSection) {
+                            loginSection.scrollIntoView({ behavior: "smooth" });
+                        } else {
+                            // Fallback: scroll to bottom where footer login usually is
+                            window.scrollTo({
+                                top: document.body.scrollHeight,
+                                behavior: "smooth",
+                            });
+                        }
+                    }
+                });
+            } else {
+                let errorMessage = data.message || "Terjadi kesalahan.";
+                if (data.errors) {
+                    errorMessage +=
+                        " " + Object.values(data.errors).flat().join(" ");
+                }
+                showMessage(errorMessage, "warn");
+            }
+        } catch (error) {
+            console.error(error);
+            showMessage(
+                "Terjadi kesalahan jaringan. Silakan coba lagi.",
+                "warn"
+            );
+        }
     });
 }
 
@@ -215,6 +271,56 @@ function initStatusCheck() {
     });
 }
 
+// ====== MODAL ======
+function initModal() {
+    const modals = document.querySelectorAll(".modal");
+    if (!modals.length) return;
+
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.add("is-open");
+            modal.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+            const input = modal.querySelector("input, button");
+            if (input) input.focus();
+        }
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove("is-open");
+            modal.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+        }
+    }
+
+    document.querySelectorAll("[data-modal]").forEach((trigger) => {
+        trigger.addEventListener("click", (e) => {
+            e.preventDefault();
+            const id = trigger.getAttribute("data-modal");
+            openModal(id);
+        });
+    });
+
+    document.querySelectorAll("[data-close]").forEach((closer) => {
+        closer.addEventListener("click", (e) => {
+            const id = closer.getAttribute("data-close");
+            closeModal(id);
+        });
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const openModal = document.querySelector(".modal.is-open");
+            if (openModal) {
+                closeModal(openModal.id);
+            }
+        }
+    });
+}
+
 // ====== YEAR ======
 function initYear() {
     const el = document.getElementById("year");
@@ -229,5 +335,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initAccordion();
     initForm();
     initStatusCheck();
+    initModal();
     initYear();
 });

@@ -1,0 +1,172 @@
+Tambahkan atribut id, data-required, dan “slot error” untuk field penting
+
+Ganti input/select/textarea kamu (yang di tabs panel) dengan versi ini (yang beda cuma atribut + elemen error kecil).
+
+NISN
+
+<label class="field">
+  <span class="field__label">NISN</span>
+  <input id="nisn" type="text" name="nisn" class="field__input"
+         value="{{ old('nisn', $registration->nisn) }}"
+         required inputmode="numeric" autocomplete="off"
+         data-required="1" data-rule="nisn" placeholder="10 digit angka">
+  <div class="dashError" data-error-for="nisn"></div>
+</label>
+
+
+NIK
+
+<label class="field">
+  <span class="field__label">NIK</span>
+  <input id="nik" type="text" name="nik" class="field__input"
+         value="{{ old('nik', $registration->nik) }}"
+         required inputmode="numeric" autocomplete="off"
+         data-required="1" data-rule="nik" placeholder="16 digit angka">
+  <div class="dashError" data-error-for="nik"></div>
+</label>
+
+
+Tempat Lahir
+
+<label class="field">
+  <span class="field__label">Tempat Lahir</span>
+  <input id="tempat_lahir" type="text" name="tempat_lahir" class="field__input"
+         value="{{ old('tempat_lahir', $registration->tempat_lahir) }}"
+         required data-required="1" placeholder="Contoh: Jambi">
+  <div class="dashError" data-error-for="tempat_lahir"></div>
+</label>
+
+
+Tanggal Lahir
+
+<label class="field">
+  <span class="field__label">Tanggal Lahir</span>
+  <input id="tanggal_lahir" type="date" name="tanggal_lahir" class="field__input"
+         value="{{ old('tanggal_lahir', $registration->tanggal_lahir) }}"
+         required data-required="1" data-rule="dob">
+  <div class="dashError" data-error-for="tanggal_lahir"></div>
+</label>
+
+
+Jenis Kelamin
+
+<label class="field">
+  <span class="field__label">Jenis Kelamin</span>
+  <select id="jenis_kelamin" name="jenis_kelamin" class="field__input"
+          required data-required="1">
+    <option value="">Pilih...</option>
+    <option value="L" {{ old('jenis_kelamin', $registration->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
+    <option value="P" {{ old('jenis_kelamin', $registration->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
+  </select>
+  <div class="dashError" data-error-for="jenis_kelamin"></div>
+</label>
+
+
+Alamat
+
+<label class="field dashColFull">
+  <span class="field__label">Alamat Lengkap</span>
+  <textarea id="alamat" name="alamat" class="field__input dashTextarea"
+            required data-required="1"
+            placeholder="Tulis alamat lengkap sesuai KK">{{ old('alamat', $registration->alamat) }}</textarea>
+  <div class="dashError" data-error-for="alamat"></div>
+</label>
+
+
+Asal Sekolah
+
+<label class="field">
+  <span class="field__label">Asal Sekolah</span>
+  <input id="asal_sekolah" type="text" name="asal_sekolah" class="field__input"
+         value="{{ old('asal_sekolah', $registration->asal_sekolah) }}"
+         required data-required="1" placeholder="Contoh: MTsN 1 Jambi">
+  <div class="dashError" data-error-for="asal_sekolah"></div>
+</label>
+
+
+Nama Ayah / Ibu
+
+<label class="field">
+  <span class="field__label">Nama Ayah</span>
+  <input id="nama_ayah" type="text" name="nama_ayah" class="field__input"
+         value="{{ old('nama_ayah', $registration->nama_ayah) }}"
+         required data-required="1">
+  <div class="dashError" data-error-for="nama_ayah"></div>
+</label>
+
+<label class="field">
+  <span class="field__label">Nama Ibu</span>
+  <input id="nama_ibu" type="text" name="nama_ibu" class="field__input"
+         value="{{ old('nama_ibu', $registration->nama_ibu) }}"
+         required data-required="1">
+  <div class="dashError" data-error-for="nama_ibu"></div>
+</label>
+
+
+No. HP Wali
+
+<label class="field dashColFull">
+  <span class="field__label">No. HP Wali (WhatsApp)</span>
+  <input id="no_hp_wali" type="text" name="no_hp_wali" class="field__input"
+         value="{{ old('no_hp_wali', $registration->no_hp_wali ?? $registration->wa) }}"
+         required data-required="1" data-rule="wa"
+         inputmode="tel" placeholder="Contoh: 08xxxxxxxxxx">
+  <span class="field__hint">Boleh format 08… / 62… / +62…</span>
+  <div class="dashError" data-error-for="no_hp_wali"></div>
+</label>
+
+3) Update input file: kasih data-required-file, data-existing, data-max-mb + slot error
+
+Contoh Pas Foto (yang lain samakan: KK & Akte wajib; Ijazah optional):
+
+<input id="file-foto" type="file" name="foto"
+       class="dashFileInput"
+       accept="image/*"
+       data-required-file="1"
+       data-existing="{{ $registration->foto ? '1' : '0' }}"
+       data-max-mb="2">
+
+<div class="dashError" data-error-for="file-foto"></div>
+
+
+KK
+
+<input id="file-kk" type="file" name="kk_file" class="dashFileInput"
+       accept=".pdf,.jpg,.jpeg,.png"
+       data-required-file="1"
+       data-existing="{{ $registration->kk_file ? '1' : '0' }}"
+       data-max-mb="2">
+
+<div class="dashError" data-error-for="file-kk"></div>
+
+
+Akte
+
+<input id="file-akte" type="file" name="akte_file" class="dashFileInput"
+       accept=".pdf,.jpg,.jpeg,.png"
+       data-required-file="1"
+       data-existing="{{ $registration->akte_file ? '1' : '0' }}"
+       data-max-mb="2">
+
+<div class="dashError" data-error-for="file-akte"></div>
+
+
+Ijazah (optional → jangan pakai data-required-file="1")
+
+<input id="file-ijazah" type="file" name="ijazah_file" class="dashFileInput"
+       accept=".pdf,.jpg,.jpeg,.png"
+       data-existing="{{ $registration->ijazah_file ? '1' : '0' }}"
+       data-max-mb="2">
+
+<div class="dashError" data-error-for="file-ijazah"></div>
+
+4) Tambahin Sticky Save Bar (taruh tepat sebelum </form>)
+<div class="dashStickySave" id="dashStickySave">
+    <div class="dashStickySave__left">
+        <div class="dashStickySave__label">Kelengkapan</div>
+        <div class="dashStickySave__value"><span id="dashPct2">0</span>%</div>
+    </div>
+    <button type="button" class="btn btn--primary dashStickySave__btn" id="btnStickySubmit">
+        Simpan
+    </button>
+</div>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>@yield('title', 'Admin Panel') — PSB DARUSSALAM AL-HAFIDZ</title>
 
-  <link rel="stylesheet" href="{{ asset('admin/assets/css/admin.css') }}" />
+  <link rel="stylesheet" href="{{ asset('backend/assets/css/admin.css') }}" />
   @stack('styles')
 </head>
 <body>
@@ -54,7 +54,7 @@
   </div>
 </div>
 
-<script src="{{ asset('admin/assets/js/admin.js') }}"></script>
+<script src="{{ asset('backend/assets/js/admin.js') }}"></script>
 @stack('scripts')
 </body>
 </html>

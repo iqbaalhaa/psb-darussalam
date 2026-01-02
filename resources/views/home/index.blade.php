@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="Penerimaan Santri Baru MA - Pondok Pesantren DARUSSALAM AL-HAFIDZ, Kota Jambi." />
   <title>PSB MA — DARUSSALAM AL-HAFIDZ (Kota Jambi)</title>
 
@@ -11,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Optional font -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <link rel="stylesheet" href="{{ asset('landing/style.css') }}" />
 </head>
@@ -42,7 +44,14 @@
           <a class="nav__link" href="#faq">FAQ</a>
           <div class="nav__actions">
             <a class="btn btn--ghost" href="#kontak">Konsultasi</a>
-            <a class="btn btn--primary" href="#daftar">Daftar</a>
+            @auth
+              <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn btn--primary">Keluar</button>
+              </form>
+            @else
+              <a class="btn btn--primary" href="#" data-modal="loginModal">Masuk/Daftar</a>
+            @endauth
           </div>
         </div>
       </nav>
@@ -529,21 +538,24 @@
 
             <div class="form__row">
               <label class="field">
-                <span class="field__label">Nama Wali</span>
-                <input class="field__input" name="wali" type="text" required placeholder="Mis. Bapak/Ibu ..." />
+                <span class="field__label">Email</span>
+                <input class="field__input" name="email" type="email" required placeholder="Mis. fulan@example.com" />
               </label>
 
               <label class="field">
-                <span class="field__label">WhatsApp Wali</span>
+                <span class="field__label">Password</span>
+                <input class="field__input" name="password" type="password" required placeholder="Buat password untuk login" />
+                <span class="field__hint">Minimal 8 karakter.</span>
+              </label>
+            </div>
+
+            <div class="form__row">
+              <label class="field">
+                <span class="field__label">WhatsApp</span>
                 <input class="field__input" name="wa" type="tel" inputmode="tel" required placeholder="Contoh: 0812xxxxxxx" />
                 <span class="field__hint">Pastikan aktif untuk konfirmasi.</span>
               </label>
             </div>
-
-            <label class="field">
-              <span class="field__label">Domisili</span>
-              <input class="field__input" name="domisili" type="text" required placeholder="Kecamatan, Kota/Kabupaten" />
-            </label>
 
             <div class="form__actions">
               <button class="btn btn--primary" type="submit">Kirim & Lanjut</button>
@@ -707,5 +719,42 @@
   </div>
 
   <script src="{{ asset('landing/script.js') }}"></script>
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal" aria-hidden="true">
+    <div class="modal__overlay" tabindex="-1" data-close="loginModal"></div>
+    <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <header class="modal__header">
+        <h2 id="loginTitle" class="modal__title">Masuk</h2>
+        <button class="modal__close" type="button" aria-label="Tutup modal" data-close="loginModal">×</button>
+      </header>
+      <div class="modal__content">
+        <form class="form" action="{{ route('login.public') }}" method="POST">
+          @csrf
+          @if ($errors->any())
+            <div style="background: rgba(200,162,77,0.14); padding: 10px; border-radius: 8px; margin-bottom: 1rem; color: #856404; font-size: 0.9rem;">
+                {{ $errors->first() }}
+            </div>
+          @endif
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <label class="field">
+              <span class="field__label">Email / Username</span>
+              <input class="field__input" name="email" type="text" required placeholder="Masukkan email atau username" />
+            </label>
+            <label class="field">
+              <span class="field__label">Password</span>
+              <input class="field__input" name="password" type="password" required placeholder="Masukkan password" />
+            </label>
+          </div>
+          <div class="form__actions" style="margin-top: 1.5rem;">
+            <button class="btn btn--primary w-full" type="submit">Masuk</button>
+          </div>
+        </form>
+        <div style="margin-top: 1rem; text-align: center; font-size: 0.9rem; color: var(--muted);">
+          Belum punya akun? <a href="#daftar" class="accent" data-close="loginModal">Daftar sekarang</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
