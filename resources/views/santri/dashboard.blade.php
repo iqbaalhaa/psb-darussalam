@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Santri - PSB Darussalam</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('landing/style.css') }}">
     <link rel="stylesheet" href="{{ asset('landing/dashboard.css') }}"> {{-- tambahkan ini --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -55,20 +57,20 @@
 
     <main id="main" class="container dashWrap">
         <!-- Alerts -->
-        @if(session('success'))
+        @if (session('success'))
             <div class="dashAlert dashAlert--success" role="status" aria-live="polite">
                 <div class="dashAlert__icon">✓</div>
                 <div class="dashAlert__content">{{ session('success') }}</div>
             </div>
         @endif
 
-        @if($errors->any())
+        @if ($errors->any())
             <div class="dashAlert dashAlert--error" role="alert" aria-live="assertive">
                 <div class="dashAlert__icon">!</div>
                 <div class="dashAlert__content">
                     <div class="dashAlert__title">Ada yang perlu diperbaiki:</div>
                     <ul class="dashAlert__list">
-                        @foreach($errors->all() as $error)
+                        @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
@@ -86,7 +88,7 @@
 
                 <div class="dashStatusRow">
                     <span class="dashStatusPill dashStatusPill--{{ $registration->status }}">
-                        @if($registration->status == 'pending')
+                        @if ($registration->status == 'pending')
                             Menunggu Verifikasi
                         @elseif($registration->status == 'accepted')
                             Diterima
@@ -157,282 +159,755 @@
                 <!-- Tabs / Steps -->
                 <div class="tabs" data-tabs>
                     <div class="tabs__list" role="tablist" aria-label="Tahapan pengisian">
-                        <button type="button" class="tabs__tab is-active" role="tab" aria-selected="true" aria-controls="tab-pribadi">
+                        <button type="button" class="tabs__tab is-active" role="tab" aria-selected="true"
+                            aria-controls="tab-pribadi">
                             Data Pribadi
                         </button>
-                        <button type="button" class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-wali" tabindex="-1">
+                        <button type="button" class="tabs__tab" role="tab" aria-selected="false"
+                            aria-controls="tab-wali" tabindex="-1">
                             Orang Tua / Wali
                         </button>
-                        <button type="button" class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-berkas" tabindex="-1">
+                        <button type="button" class="tabs__tab" role="tab" aria-selected="false"
+                            aria-controls="tab-berkas" tabindex="-1">
                             Upload Berkas
                         </button>
                     </div>
 
-                    <fieldset style="border:none; padding:0; margin:0;" {{ $registration->is_locked ? 'disabled' : '' }}>
-                    <div class="tabs__panels">
-                        <!-- Panel: Data Pribadi -->
-                        <section id="tab-pribadi" class="tabs__panel is-active" role="tabpanel">
-                            <div class="dashGrid">
-                                <label class="field">
-                                    <span class="field__label">Nama Lengkap</span>
-                                    <input type="text" class="field__input is-readonly" value="{{ $registration->nama }}" disabled>
-                                    <span class="field__hint">Nama dari pendaftaran awal (tidak bisa diubah).</span>
-                                </label>
-
-                                <label class="field">
-                                  <span class="field__label">NISN</span>
-                                  <input id="nisn" type="text" name="nisn" class="field__input"
-                                         value="{{ old('nisn', $registration->nisn) }}"
-                                         required inputmode="numeric" autocomplete="off"
-                                         data-required="1" data-rule="nisn" placeholder="10 digit angka">
-                                  <div class="dashError" data-error-for="nisn"></div>
-                                </label>
-
-                                <label class="field">
-                                  <span class="field__label">NIK</span>
-                                  <input id="nik" type="text" name="nik" class="field__input"
-                                         value="{{ old('nik', $registration->nik) }}"
-                                         required inputmode="numeric" autocomplete="off"
-                                         data-required="1" data-rule="nik" placeholder="16 digit angka">
-                                  <div class="dashError" data-error-for="nik"></div>
-                                </label>
-
-                                <label class="field">
-                                  <span class="field__label">Tempat Lahir</span>
-                                  <input id="tempat_lahir" type="text" name="tempat_lahir" class="field__input"
-                                         value="{{ old('tempat_lahir', $registration->tempat_lahir) }}"
-                                         required data-required="1" placeholder="Contoh: Jambi">
-                                  <div class="dashError" data-error-for="tempat_lahir"></div>
-                                </label>
-
-                                <label class="field">
-                                  <span class="field__label">Tanggal Lahir</span>
-                                  <input id="tanggal_lahir" type="date" name="tanggal_lahir" class="field__input"
-                                         value="{{ old('tanggal_lahir', $registration->tanggal_lahir) }}"
-                                         required data-required="1" data-rule="dob">
-                                  <div class="dashError" data-error-for="tanggal_lahir"></div>
-                                </label>
-
-                                <label class="field">
-                                  <span class="field__label">Jenis Kelamin</span>
-                                  <select id="jenis_kelamin" name="jenis_kelamin" class="field__input"
-                                          required data-required="1">
-                                    <option value="">Pilih...</option>
-                                    <option value="L" {{ old('jenis_kelamin', $registration->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="P" {{ old('jenis_kelamin', $registration->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
-                                  </select>
-                                  <div class="dashError" data-error-for="jenis_kelamin"></div>
-                                </label>
-
-                                <label class="field dashColFull">
-                                  <span class="field__label">Alamat Lengkap</span>
-                                  <textarea id="alamat" name="alamat" class="field__input dashTextarea"
-                                            required data-required="1"
-                                            placeholder="Tulis alamat lengkap sesuai KK">{{ old('alamat', $registration->alamat) }}</textarea>
-                                  <div class="dashError" data-error-for="alamat"></div>
-                                </label>
-
-                                <label class="field">
-                                  <span class="field__label">Asal Sekolah</span>
-                                  <input id="asal_sekolah" type="text" name="asal_sekolah" class="field__input"
-                                         value="{{ old('asal_sekolah', $registration->asal_sekolah) }}"
-                                         required data-required="1" placeholder="Contoh: MTsN 1 Jambi">
-                                  <div class="dashError" data-error-for="asal_sekolah"></div>
-                                </label>
-                            </div>
-
-                            <div class="dashPanelActions">
-                                <button type="button" class="btn btn--ghost" data-next-tab="tab-wali">Lanjut: Orang Tua/Wali →</button>
-                            </div>
-                        </section>
-
-                        <!-- Panel: Orang Tua / Wali -->
-                        <section id="tab-wali" class="tabs__panel" role="tabpanel">
-                            <div class="dashGrid">
-                                <label class="field">
-                                  <span class="field__label">Nama Ayah</span>
-                                  <input id="nama_ayah" type="text" name="nama_ayah" class="field__input"
-                                         value="{{ old('nama_ayah', $registration->nama_ayah) }}"
-                                         required data-required="1">
-                                  <div class="dashError" data-error-for="nama_ayah"></div>
-                                </label>
-
-                                <label class="field">
-                                  <span class="field__label">Nama Ibu</span>
-                                  <input id="nama_ibu" type="text" name="nama_ibu" class="field__input"
-                                         value="{{ old('nama_ibu', $registration->nama_ibu) }}"
-                                         required data-required="1">
-                                  <div class="dashError" data-error-for="nama_ibu"></div>
-                                </label>
-
-                                <label class="field dashColFull">
-                                  <span class="field__label">No. HP Wali (WhatsApp)</span>
-                                  <input id="no_hp_wali" type="text" name="no_hp_wali" class="field__input"
-                                         value="{{ old('no_hp_wali', $registration->no_hp_wali ?? $registration->wa) }}"
-                                         required data-required="1" data-rule="wa"
-                                         inputmode="tel" placeholder="Contoh: 08xxxxxxxxxx">
-                                  <span class="field__hint">Boleh format 08… / 62… / +62…</span>
-                                  <div class="dashError" data-error-for="no_hp_wali"></div>
-                                </label>
-                            </div>
-
-                            <div class="dashPanelActions dashPanelActions--between">
-                                <button type="button" class="btn btn--outline" data-prev-tab="tab-pribadi">← Kembali</button>
-                                <button type="button" class="btn btn--ghost" data-next-tab="tab-berkas">Lanjut: Upload Berkas →</button>
-                            </div>
-                        </section>
-
-                        <!-- Panel: Upload Berkas -->
-                        <section id="tab-berkas" class="tabs__panel" role="tabpanel">
-                            <div class="dashUploadGrid">
-                                <!-- Pas Foto -->
-                                <div class="dashUploadCard">
-                                    <div class="dashUploadCard__head">
-                                        <div class="dashUploadCard__title">Pas Foto Santri</div>
-                                        <div class="dashUploadCard__meta">JPG/PNG • maks 2MB</div>
-                                    </div>
-
-                                    <label class="dashDropzone" for="file-foto">
-                                        <div class="dashDropzone__icon">⬆</div>
-                                        <div class="dashDropzone__text">
-                                            <div class="dashDropzone__strong">Klik untuk upload</div>
-                                            <div class="dashDropzone__muted" data-file-name="file-foto">Belum ada file</div>
-                                        </div>
+                    <fieldset style="border:none; padding:0; margin:0;"
+                        {{ $registration->is_locked ? 'disabled' : '' }}>
+                        <div class="tabs__panels">
+                            <!-- Panel: Data Pribadi -->
+                            <section id="tab-pribadi" class="tabs__panel is-active" role="tabpanel">
+                                <div class="dashGrid">
+                                    <label class="field">
+                                        <span class="field__label">Nama Lengkap</span>
+                                        <input type="text" class="field__input is-readonly"
+                                            value="{{ $registration->nama }}" disabled>
+                                        <span class="field__hint">Nama dari pendaftaran awal (tidak bisa
+                                            diubah).</span>
                                     </label>
-                                    <input id="file-foto" type="file" name="foto"
-                                           class="dashFileInput"
-                                           accept="image/*"
-                                           data-required-file="1"
-                                           data-existing="{{ $registration->foto ? '1' : '0' }}"
-                                           data-max-mb="2">
-                                    <div class="dashError" data-error-for="file-foto"></div>
 
-                                    @if($registration->foto)
-                                        <div class="dashUploaded">
-                                            <span class="dashUploaded__badge">Sudah diupload</span>
-                                            <a class="link" href="{{ asset('storage/'.$registration->foto) }}" target="_blank">Lihat</a>
-                                        </div>
-                                    @endif
+                                    <label class="field">
+                                        <span class="field__label">NISN</span>
+                                        <input id="nisn" type="text" name="nisn" class="field__input"
+                                            value="{{ old('nisn', $registration->nisn) }}" required
+                                            inputmode="numeric" autocomplete="off" data-required="1" minlength="10"
+                                            maxlength="10" data-rule="nisn" placeholder="10 digit angka">
+                                        <div class="dashError" data-error-for="nisn"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">NIK</span>
+                                        <input id="nik" type="text" name="nik" class="field__input"
+                                            value="{{ old('nik', $registration->nik) }}" required inputmode="numeric"
+                                            autocomplete="off" data-required="1" minlength="16" maxlength="16"
+                                            data-rule="nik" placeholder="16 digit angka">
+                                        <div class="dashError" data-error-for="nik"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Tempat Lahir</span>
+                                        <input id="tempat_lahir" type="text" name="tempat_lahir"
+                                            class="field__input"
+                                            value="{{ old('tempat_lahir', $registration->tempat_lahir) }}" required
+                                            data-required="1" placeholder="Contoh: Jambi">
+                                        <div class="dashError" data-error-for="tempat_lahir"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Tanggal Lahir</span>
+                                        <input id="tanggal_lahir" type="date" name="tanggal_lahir"
+                                            class="field__input"
+                                            value="{{ old('tanggal_lahir', $registration->tanggal_lahir) }}" required
+                                            data-required="1" data-rule="dob">
+                                        <div class="dashError" data-error-for="tanggal_lahir"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Jenis Kelamin</span>
+                                        <select id="jenis_kelamin" name="jenis_kelamin" class="field__input" required
+                                            data-required="1">
+                                            <option value="">Pilih...</option>
+                                            <option value="L"
+                                                {{ old('jenis_kelamin', $registration->jenis_kelamin) == 'L' ? 'selected' : '' }}>
+                                                Laki-laki</option>
+                                            <option value="P"
+                                                {{ old('jenis_kelamin', $registration->jenis_kelamin) == 'P' ? 'selected' : '' }}>
+                                                Perempuan</option>
+                                        </select>
+                                        <div class="dashError" data-error-for="jenis_kelamin"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Alamat Lengkap</span>
+                                        <textarea id="alamat" name="alamat" class="field__input dashTextarea" required data-required="1"
+                                            placeholder="Tulis alamat lengkap sesuai KK">{{ old('alamat', $registration->alamat) }}</textarea>
+                                        <div class="dashError" data-error-for="alamat"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Asal Sekolah</span>
+                                        <input id="asal_sekolah" type="text" name="asal_sekolah"
+                                            class="field__input"
+                                            value="{{ old('asal_sekolah', $registration->asal_sekolah) }}" required
+                                            data-required="1" placeholder="Contoh: MTsN 1 Jambi">
+                                        <div class="dashError" data-error-for="asal_sekolah"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Anak Ke</span>
+                                        <input id="anak_ke" type="number" name="anak_ke" class="field__input"
+                                            value="{{ old('anak_ke', $registration->anak_ke) }}" required
+                                            data-required="1" placeholder="Contoh: 1">
+                                        <div class="dashError" data-error-for="anak_ke"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Jumlah Saudara</span>
+                                        <input id="jumlah_saudara" type="number" name="jumlah_saudara"
+                                            class="field__input"
+                                            value="{{ old('jumlah_saudara', $registration->jumlah_saudara) }}"
+                                            required data-required="1" placeholder="Contoh: 1">
+                                        <div class="dashError" data-error-for="jumlah_saudara"></div>
+                                    </label>
+
+
                                 </div>
 
-                                <!-- KK -->
-                                <div class="dashUploadCard">
-                                    <div class="dashUploadCard__head">
-                                        <div class="dashUploadCard__title">Kartu Keluarga (KK)</div>
-                                        <div class="dashUploadCard__meta">PDF/JPG/PNG • maks 2MB</div>
+                                <div class="dashPanelActions">
+                                    <button type="button" class="btn btn--ghost" data-next-tab="tab-wali">Lanjut:
+                                        Orang Tua/Wali →</button>
+                                </div>
+                            </section>
+
+                            <!-- Panel: Orang Tua / Wali -->
+                            {{-- ========================= Data Ayah ================================= --}}
+                            <section id="tab-wali" class="tabs__panel" role="tabpanel">
+                                <div class="dashGrid">
+                                    <label class="field">
+                                        <span class="field__label">No KK (Kartu Keluarga)</span>
+                                        <input id="no_kk" type="text" name="no_kk" class="field__input"
+                                            value="{{ old('no_kk', $registration->no_kk) }}" required
+                                            data-required="1" maxlength="16" minlength="16">
+                                        <div class="dashError" data-error-for="no_kk"></div>
+                                    </label>
+
+
+                                    <label class="field">
+                                        <span class="field__label">NIK Ayah</span>
+                                        <input id="nik_ayah" type="text" name="nik_ayah" class="field__input"
+                                            value="{{ old('nik_ayah', $registration->nik_ayah) }}" required
+                                            data-required="1" maxlength="16" minlength="16">
+                                        <div class="dashError" data-error-for="nik_ayah"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Nama Ayah</span>
+                                        <input id="nama_ayah" type="text" name="nama_ayah" class="field__input"
+                                            value="{{ old('nama_ayah', $registration->nama_ayah) }}" required
+                                            data-required="1" maxlength="250">
+                                        <div class="dashError" data-error-for="nama_ayah"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Tanggal Lahir Ayah</span>
+                                        <input id="tanggal_lahir_ayah" type="date" name="tanggal_lahir_ayah"
+                                            class="field__input"
+                                            value="{{ old('tanggal_lahir_ayah', $registration->tanggal_lahir_ayah) }}"
+                                            required data-required="1">
+                                        <div class="dashError" data-error-for="tanggal_lahir_ayah"></div>
+                                    </label>
+
+
+                                    <label class="field">
+                                        <span class="field__label">Umur Ayah</span>
+                                        <input id="umur_ayah" type="number" name="umur_ayah" class="field__input"
+                                            value="{{ old('umur_ayah', $registration->umur_ayah) }}" min="1"
+                                            required data-required="1" maxlength="250">
+                                        <div class="dashError" data-error-for="umur_ayah"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Tempat Lahir Ayah</span>
+                                        <input id="tempat_lahir_ayah" type="string" name="tempat_lahir_ayah"
+                                            class="field__input"
+                                            value="{{ old('tempat_lahir_ayah', $registration->tempat_lahir_ayah) }}"
+                                            min="1" required data-required="1" maxlength="250">
+                                        <div class="dashError" data-error-for="umur_ayah"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Jenjang Pendidikan Ayah</span>
+                                        <select id="pendidikan_terakhir_ayah" name="pendidikan_terakhir_ayah"
+                                            class="field__input" required data-required="1">
+                                            <option value="" disabled
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == '' ? 'selected' : '' }}>
+                                                Pilih Pendidikan</option>
+                                            <option value="SD"
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == 'SD' ? 'selected' : '' }}>
+                                                SD / Sederajat</option>
+                                            <option value="SMP"
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == 'SMP' ? 'selected' : '' }}>
+                                                SMP / Sederajat</option>
+                                            <option value="SMA"
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == 'SMA' ? 'selected' : '' }}>
+                                                SMA / SMK / Sederajat</option>
+                                            <option value="D3"
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == 'D3' ? 'selected' : '' }}>
+                                                Diploma 3 (D3)</option>
+                                            <option value="S1"
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == 'S1' ? 'selected' : '' }}>
+                                                Sarjana (S1)</option>
+                                            <option value="S2"
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == 'S2' ? 'selected' : '' }}>
+                                                Magister (S2)</option>
+                                            <option value="S3"
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == 'S3' ? 'selected' : '' }}>
+                                                Doktor (S3)</option>
+                                            <option value="Tidak Sekolah"
+                                                {{ old('pendidikan_terakhir_ayah', $registration->pendidikan_terakhir_ayah) == 'Tidak Sekolah' ? 'selected' : '' }}>
+                                                Tidak Sekolah</option>
+                                        </select>
+                                        <div class="dashError" data-error-for="pendidikan_terakhir_ayah"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Alamat Lengkap Ayah</span>
+                                        <input id="alamat_lengkap_ayah" type="text" name="alamat_lengkap_ayah"
+                                            class="field__input"
+                                            value="{{ old('alamat_lengkap_ayah', $registration->alamat_lengkap_ayah) }}"
+                                            maxlength="250" required data-required="1">
+                                        <div class="dashError" data-error-for="alamat_lengkap_ayah"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">No. HP/(WA) Ayah</span>
+                                        <input id="no_hp_ayah" type="text" name="no_hp_ayah" class="field__input"
+                                            value="{{ old('no_hp_ayah', $registration->no_hp_ayah) }}" required
+                                            data-required="1" maxlength="15" data-rule="wa" inputmode="tel"
+                                            placeholder="Contoh: 08xxxxxxxxxx">
+                                        <span class="field__hint">Boleh format 08… / 62… / +62…</span>
+                                        <div class="dashError" data-error-for="no_hp_ayah"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Kode Pos</span>
+                                        <input id="kode_pos" type="text" name="kode_pos" class="field__input"
+                                            value="{{ old('kode_pos', $registration->kode_pos) }}" required
+                                            data-required="1" maxlength="5" placeholder="Contoh: 12345">
+                                        <div class="dashError" data-error-for="kode_pos"></div>
+                                    </label>
+
+
+                                    {{-- ========================= Data Ibu ============================================== --}}
+
+                                    <label class="field">
+                                        <span class="field__label">NIK Ibu</span>
+                                        <input id="nik_ibu" type="text" name="nik_ibu" class="field__input"
+                                            value="{{ old('nik_ibu', $registration->nik_ibu) }}" required
+                                            data-required="1" maxlength="16" minlength="16">
+                                        <div class="dashError" data-error-for="nik_ibu"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Nama Ibu</span>
+                                        <input id="nama_ibu" type="text" name="nama_ibu" class="field__input"
+                                            value="{{ old('nama_ibu', $registration->nama_ibu) }}" required
+                                            data-required="1" maxlength="250">
+                                        <div class="dashError" data-error-for="nama_ibu"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Tanggal Lahir Ibu</span>
+                                        <input id="tanggal_lahir_ibu" type="date" name="tanggal_lahir_ibu"
+                                            class="field__input"
+                                            value="{{ old('tanggal_lahir_ibu', $registration->tanggal_lahir_ibu) }}"
+                                            min="1" required data-required="1">
+                                        <div class="dashError" data-error-for="tanggal_lahir_ibu"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Umur Ibu</span>
+                                        <input id="umur_ibu" type="number" name="umur_ibu" class="field__input"
+                                            value="{{ old('umur_ibu', $registration->umur_ibu) }}" min="1"
+                                            required data-required="1" maxlength="250">
+                                        <div class="dashError" data-error-for="umur_ibu"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Tempat Lahir Ibu</span>
+                                        <input id="tempat_lahir_ibu" type="text" name="tempat_lahir_ibu"
+                                            class="field__input"
+                                            value="{{ old('tempat_lahir_ibu', $registration->tempat_lahir_ibu) }}"
+                                            min="1" required data-required="1" maxlength="250">
+                                        <div class="dashError" data-error-for="tempat_lahir_ibu"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Jenjang Pendidikan Ibu</span>
+                                        <select id="pendidikan_terakhir_ibu" name="pendidikan_terakhir_ibu"
+                                            class="field__input" required data-required="1">
+                                            <option value="" disabled
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == '' ? 'selected' : '' }}>
+                                                Pilih Pendidikan</option>
+                                            <option value="SD"
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == 'SD' ? 'selected' : '' }}>
+                                                SD / Sederajat</option>
+                                            <option value="SMP"
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == 'SMP' ? 'selected' : '' }}>
+                                                SMP / Sederajat</option>
+                                            <option value="SMA"
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == 'SMA' ? 'selected' : '' }}>
+                                                SMA / SMK / Sederajat</option>
+                                            <option value="D3"
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == 'D3' ? 'selected' : '' }}>
+                                                Diploma 3 (D3)</option>
+                                            <option value="S1"
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == 'S1' ? 'selected' : '' }}>
+                                                Sarjana (S1)</option>
+                                            <option value="S2"
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == 'S2' ? 'selected' : '' }}>
+                                                Magister (S2)</option>
+                                            <option value="S3"
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == 'S3' ? 'selected' : '' }}>
+                                                Doktor (S3)</option>
+                                            <option value="Tidak Sekolah"
+                                                {{ old('pendidikan_terakhir_ibu', $registration->pendidikan_terakhir_ibu) == 'Tidak Sekolah' ? 'selected' : '' }}>
+                                                Tidak Sekolah</option>
+                                        </select>
+                                        <div class="dashError" data-error-for="pendidikan_terakhir_ibu"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Alamat Lengkap Ibu</span>
+                                        <input id="alamat_lengkap_ibu" type="text" name="alamat_lengkap_ibu"
+                                            class="field__input"
+                                            value="{{ old('alamat_lengkap_ibu', $registration->alamat_lengkap_ibu) }}"
+                                            maxlength="250" required data-required="1">
+                                        <div class="dashError" data-error-for="alamat_lengkap_ibu"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">No. HP/(WA) Ibu</span>
+                                        <input id="no_hp_ibu" type="text" name="no_hp_ibu" class="field__input"
+                                            value="{{ old('no_hp_ibu', $registration->no_hp_ibu) }}" required
+                                            data-required="1" maxlength="15" data-rule="wa" inputmode="tel"
+                                            placeholder="Contoh: 08xxxxxxxxxx">
+                                        <span class="field__hint">Boleh format 08… / 62… / +62…</span>
+                                        <div class="dashError" data-error-for="no_hp_ibu"></div>
+                                    </label>
+
+
+                                </div>
+
+                                <div class="dashPanelActions dashPanelActions--between">
+                                    <button type="button" class="btn btn--outline" data-prev-tab="tab-pribadi">←
+                                        Kembali</button>
+                                    <button type="button" class="btn btn--ghost" data-next-tab="tab-berkas">Lanjut:
+                                        Upload Berkas →</button>
+                                </div>
+                            </section>
+
+
+                            {{-- UBAH KODINGAN DIBAWAH INI  --}}
+                            <!-- Panel: Upload Berkas -->
+                            <section id="tab-berkas" class="tabs__panel" role="tabpanel">
+                                <div class="dashUploadGrid">
+
+
+                                    <!-- File Biodata -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas Biodata</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-biodata">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-biodata">Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-biodata" type="file" name="file_biodata"
+                                            class="dashFileInput" accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_biodata ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-biodata"></div>
+
+                                        @if ($registration->file_biodata)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_biodata) }}"
+                                                    target="_blank">Lihat</a>
+                                            </div>
+                                        @endif
                                     </div>
 
-                                    <label class="dashDropzone" for="file-kk">
-                                        <div class="dashDropzone__icon">⬆</div>
-                                        <div class="dashDropzone__text">
-                                            <div class="dashDropzone__strong">Klik untuk upload</div>
-                                            <div class="dashDropzone__muted" data-file-name="file-kk">Belum ada file</div>
+                                    <!-- File Rapor -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas Raport</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
                                         </div>
+
+                                        <label class="dashDropzone" for="file-rapor">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-rapor">Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-rapor" type="file" name="file_rapor"
+                                            class="dashFileInput" accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_rapor ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-rapor"></div>
+
+                                        @if ($registration->file_rapor)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_rapor) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File Ijazah -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas Ijazah</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-ijazah">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-ijazah">Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-ijazah" type="file" name="file_ijazah"
+                                            class="dashFileInput" accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_ijazah ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-ijazah"></div>
+
+                                        @if ($registration->file_ijazah)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_ijazah) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File SKL -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas SKL (Surat Keterangan Lulus jika
+                                                ada)</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-skl">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-skl">Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-skl" type="file" name="file_skl" class="dashFileInput"
+                                            accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_skl ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-skl"></div>
+
+                                        @if ($registration->file_skl)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_skl) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File Akta Kelahiran -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas Akta Kelahiran</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-akta-kelahiran">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-akta-kelahiran">
+                                                    Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-akta-kelahiran" type="file" name="file_akta_kelahiran"
+                                            class="dashFileInput" accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_akta_kelahiran ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-akta-kelahiran"></div>
+
+                                        @if ($registration->file_akta_kelahiran)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_akta_kelahiran) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File KK -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas Kartu Keluarga (KK)</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-kk">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-kk">
+                                                    Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-kk" type="file" name="file_kk" class="dashFileInput"
+                                            accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_kk ? '1' : '0' }}" data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-kk"></div>
+
+                                        @if ($registration->file_kk)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_kk) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File Pas Foto -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Pas Foto (Ukuran 3x2)</div>
+                                            <div class="dashUploadCard__meta">Image • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-pas-foto">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-pas-foto">
+                                                    Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-pas-foto" type="file" name="file_pas_foto"
+                                            class="dashFileInput" accept="image/*" data-required-file="1"
+                                            data-existing="{{ $registration->file_pas_foto ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-kk"></div>
+
+                                        @if ($registration->file_pas_foto)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_pas_foto) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File KTP Ayah -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas KTP Ayah</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-ktp-ayah">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-ktp-ayah">
+                                                    Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-ktp-ayah" type="file" name="file_ktp_ayah"
+                                            class="dashFileInput" accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_ktp_ayah ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-kk"></div>
+
+                                        @if ($registration->file_ktp_ayah)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_ktp_ayah) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File KTP Ibu -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas KTP Ibu</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-ktp-ibu">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-ktp-ibu">
+                                                    Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-ktp-ibu" type="file" name="file_ktp_ibu"
+                                            class="dashFileInput" accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_ktp_ibu ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-kk"></div>
+
+                                        @if ($registration->file_ktp_ibu)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_ktp_ibu) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File KIP -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas PKH/KIP/KIS (Jika ada)</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-kip">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <div class="dashDropzone__strong">Klik untuk upload</div>
+                                                <div class="dashDropzone__muted" data-file-name="file-kip">
+                                                    Belum
+                                                    ada
+                                                    file</div>
+                                            </div>
+                                        </label>
+                                        <input id="file-kip" type="file" name="file_kip" class="dashFileInput"
+                                            accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_kip ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-kk"></div>
+
+                                        @if ($registration->file_kip)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('storage/' . $registration->file_kip) }}"
+                                                    target="_blank">Lihat</a>accept="image/*"
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- File Bpjs -->
+                                    <div class="dashUploadCard">
+                                        <div class="dashUploadCard__head">
+                                            <div class="dashUploadCard__title">Berkas BPJS</div>
+                                            <div class="dashUploadCard__meta">PDF • maks 2MB</div>
+                                        </div>
+
+                                        <label class="dashDropzone" for="file-bpjs">
+                                            <div class="dashDropzone__icon">⬆</div>
+                                            <div class="dashDropzone__text">
+                                                <db")iv class="dashDropzone__strong">Klik untuk upload
+                                            </div>
+                                            <div class="dashDropzone__muted" data-file-name="file-bpjs">
+                                                Belum
+                                                ada
+                                                file</div>
+                                    </div>
                                     </label>
-                                    <input id="file-kk" type="file" name="kk_file" class="dashFileInput"
-                                           accept=".pdf,.jpg,.jpeg,.png"
-                                           data-required-file="1"
-                                           data-existing="{{ $registration->kk_file ? '1' : '0' }}"
-                                           data-max-mb="2">
+                                    <input id="file-bpjs" type="file" name="file_bpjs" class="dashFileInput"
+                                        accept=".pdf" data-required-file="1"
+                                        data-existing="{{ $registration->file_bpjs ? '1' : '0' }}" data-max-mb="2">
                                     <div class="dashError" data-error-for="file-kk"></div>
 
-                                    @if($registration->kk_file)
+                                    @if ($registration->file_bpjs)
                                         <div class="dashUploaded">
                                             <span class="dashUploaded__badge">Sudah diupload</span>
-                                            <a class="link" href="{{ asset('storage/'.$registration->kk_file) }}" target="_blank">Lihat</a>
+                                            <a class="link"
+                                                href="{{ asset('storage/' . $registration->file_bpjs) }}"
+                                                target="_blank">Lihat</a>accept="image/*"
                                         </div>
                                     @endif
+                                    </db>
                                 </div>
 
-                                <!-- Akte -->
-                                <div class="dashUploadCard">
-                                    <div class="dashUploadCard__head">
-                                        <div class="dashUploadCard__title">Akte Kelahiran</div>
-                                        <div class="dashUploadCard__meta">PDF/JPG/PNG • maks 2MB</div>
-                                    </div>
-
-                                    <label class="dashDropzone" for="file-akte">
-                                        <div class="dashDropzone__icon">⬆</div>
-                                        <div class="dashDropzone__text">
-                                            <div class="dashDropzone__strong">Klik untuk upload</div>
-                                            <div class="dashDropzone__muted" data-file-name="file-akte">Belum ada file</div>
-                                        </div>
-                                    </label>
-                                    <input id="file-akte" type="file" name="akte_file" class="dashFileInput"
-                                           accept=".pdf,.jpg,.jpeg,.png"
-                                           data-required-file="1"
-                                           data-existing="{{ $registration->akte_file ? '1' : '0' }}"
-                                           data-max-mb="2">
-                                    <div class="dashError" data-error-for="file-akte"></div>
-
-                                    @if($registration->akte_file)
-                                        <div class="dashUploaded">
-                                            <span class="dashUploaded__badge">Sudah diupload</span>
-                                            <a class="link" href="{{ asset('storage/'.$registration->akte_file) }}" target="_blank">Lihat</a>
-                                        </div>
-                                    @endif
+                                <div class="dashPanelActions dashPanelActions--between">
+                                    <button type="button" class="btn btn--outline" data-prev-tab="tab-wali">←
+                                        Kembali</button>
+                                    <button type="submit" class="btn btn--primary dashBtnSave">
+                                        Simpan & Perbarui Data
+                                    </button>
                                 </div>
 
-                                <!-- Ijazah -->
-                                <div class="dashUploadCard">
-                                    <div class="dashUploadCard__head">
-                                        <div class="dashUploadCard__title">Ijazah / SKL (Jika ada)</div>
-                                        <div class="dashUploadCard__meta">PDF/JPG/PNG • maks 2MB</div>
-                                    </div>
-
-                                    <label class="dashDropzone" for="file-ijazah">
-                                        <div class="dashDropzone__icon">⬆</div>
-                                        <div class="dashDropzone__text">
-                                            <div class="dashDropzone__strong">Klik untuk upload</div>
-                                            <div class="dashDropzone__muted" data-file-name="file-ijazah">Belum ada file</div>
-                                        </div>
-                                    </label>
-                                    <input id="file-ijazah" type="file" name="ijazah_file" class="dashFileInput"
-                                           accept=".pdf,.jpg,.jpeg,.png"
-                                           data-existing="{{ $registration->ijazah_file ? '1' : '0' }}"
-                                           data-max-mb="2">
-                                    <div class="dashError" data-error-for="file-ijazah"></div>
-
-                                    @if($registration->ijazah_file)
-                                        <div class="dashUploaded">
-                                            <span class="dashUploaded__badge">Sudah diupload</span>
-                                            <a class="link" href="{{ asset('storage/'.$registration->ijazah_file) }}" target="_blank">Lihat</a>
-                                        </div>
-                                    @endif
+                                <div class="dashFootHint">
+                                    Dengan menekan “Simpan”, Anda menyatakan data yang diisi benar sesuai dokumen.
                                 </div>
-                            </div>
-
-                            <div class="dashPanelActions dashPanelActions--between">
-                                <button type="button" class="btn btn--outline" data-prev-tab="tab-wali">← Kembali</button>
-                                <button type="submit" class="btn btn--primary dashBtnSave">
-                                    Simpan & Perbarui Data
-                                </button>
-                            </div>
-
-                            <div class="dashFootHint">
-                                Dengan menekan “Simpan”, Anda menyatakan data yang diisi benar sesuai dokumen.
-                            </div>
-                        </section>
-                    </div>
+                            </section>
+                        </div>
                     </fieldset>
                 </div>
 
-                @if(!$registration->is_locked)
-                <div class="dashStickySave" id="dashStickySave">
-                    <div class="dashStickySave__left">
-                        <div class="dashStickySave__label">Kelengkapan</div>
-                        <div class="dashStickySave__value"><span id="dashPct2">0</span>%</div>
+                @if (!$registration->is_locked)
+                    <div class="dashStickySave" id="dashStickySave">
+                        <div class="dashStickySave__left">
+                            <div class="dashStickySave__label">Kelengkapan</div>
+                            <div class="dashStickySave__value"><span id="dashPct2">0</span>%</div>
+                        </div>
+                        <button type="button" class="btn btn--primary dashStickySave__btn" id="btnStickySubmit">
+                            Simpan Permanen
+                        </button>
                     </div>
-                    <button type="button" class="btn btn--primary dashStickySave__btn" id="btnStickySubmit">
-                        Simpan Permanen
-                    </button>
-                </div>
                 @else
-                <div class="dashStickySave" style="justify-content: center; background: #f0fdf4; border-top: 1px solid #16a34a;">
-                    <div style="color: #166534; font-weight: 600;">
-                        ✓ Data telah dikirim dan sedang dalam verifikasi.
+                    <div class="dashStickySave"
+                        style="justify-content: center; background: #f0fdf4; border-top: 1px solid #16a34a;">
+                        <div style="color: #166534; font-weight: 600;">
+                            ✓ Data telah dikirim dan sedang dalam verifikasi.
+                        </div>
                     </div>
-                </div>
                 @endif
             </form>
         </section>
@@ -483,7 +958,10 @@
                 });
 
                 panels.forEach((p) => p.classList.toggle("is-active", p.id === panelId));
-                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+                panel.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
             }
 
             document.querySelectorAll("[data-next-tab]").forEach((el) => {
@@ -509,7 +987,7 @@
             const btnSubmit = document.getElementById("btnStickySubmit");
             // Ambil juga tombol simpan yang ada di dalam form
             const btnFormSubmit = document.querySelector(".dashBtnSave");
-            
+
             const form = document.querySelector(".dashForm");
             const modal = document.getElementById('summaryModal');
             const modalBody = document.getElementById('modalBodyContent');
@@ -519,26 +997,26 @@
 
             // Close modal functions
             const closeModal = () => {
-                if(modal) modal.classList.remove('is-open');
+                if (modal) modal.classList.remove('is-open');
             };
 
             // Gunakan onclick untuk memastikan event terpasang dengan benar
-            if(btnModalClose) {
+            if (btnModalClose) {
                 btnModalClose.onclick = (e) => {
                     e.preventDefault();
                     closeModal();
                 };
             }
-            
-            if(btnModalCancel) {
+
+            if (btnModalCancel) {
                 btnModalCancel.onclick = (e) => {
                     e.preventDefault();
                     closeModal();
                 };
             }
-            
+
             // Close on backdrop click
-            if(modal) {
+            if (modal) {
                 modal.onclick = (e) => {
                     if (e.target === modal) closeModal();
                 };
@@ -561,20 +1039,62 @@
                 const jenisKelamin = elJK?.options[elJK.selectedIndex]?.text || "-";
                 const alamat = document.getElementById("alamat")?.value || "-";
                 const asalSekolah = document.getElementById("asal_sekolah")?.value || "-";
+                // const namaAyah = document.getElementById("nama_ayah")?.value || "-";
+                // const namaIbu = document.getElementById("nama_ibu")?.value || "-";
+                // const noHp = document.getElementById("no_hp_wali")?.value || "-";
+
+                // Tambahan : 
+                const anakKe = document.getElementById("anak_ke")?.value || "-";
+                const jumlahSaudara = document.getElementById("jumlah_saudara")?.value || "-";
+
+                // Data Ayah : 
+                const noKk = document.getElementById("no_kk")?.value || "-";
                 const namaAyah = document.getElementById("nama_ayah")?.value || "-";
+                const nikAyah = document.getElementById("nik_ayah")?.value || "-";
+                const umurAyah = document.getElementById("umur_ayah")?.value || "-";
+                const tempatLahirAyah = document.getElementById("tempat_lahir_ayah")?.value || "-";
+                const tanggalLahirAyah = document.getElementById("tanggal_lahir_ayah")?.value || "-";
+                const pendidikanTerakhirAyah = document.getElementById("pendidikan_terakhir_ayah")?.value ||
+                    "-";
+                const alamatAyah = document.getElementById("alamat_lengkap_ayah")?.value || "-";
+                const noHpAyah = document.getElementById("no_hp_ayah")?.value || "-";
+                const kodePos = document.getElementById("kode_pos")?.value || "-";
+
+                // Data Ibu
                 const namaIbu = document.getElementById("nama_ibu")?.value || "-";
-                const noHp = document.getElementById("no_hp_wali")?.value || "-";
-                
+                const nikIbu = document.getElementById("nik_Ibu")?.value || "-";
+                const umurIbu = document.getElementById("umur_Ibu")?.value || "-";
+                const tempatLahiribu = document.getElementById("tempat_lahir_ibu")?.value || "-";
+                const tanggalLahirIbu = document.getElementById("tanggal_lahir_Ibu")?.value || "-";
+                const pendidikanTerakhiribu = document.getElementById("pendidikan_terakhir_ibu")?.value ||
+                    "-";
+                const alamatIbu = document.getElementById("alamat_lengkap_ibu")?.value || "-";
+                const noHpibu = document.getElementById("no_hp_ibu")?.value || "-";
+
                 // Files check helper
                 const checkFile = (id) => {
                     const input = document.getElementById(id);
-                    if (input?.files?.length) return "<span style='color:#0f766e'>✓ Ada (Akan diupload)</span>";
+                    if (input?.files?.length)
+                        return "<span style='color:#0f766e'>✓ Ada (Akan diupload)</span>";
                     const existing = input?.getAttribute("data-existing") === "1";
-                    return existing ? "<span style='color:#0f766e'>✓ Sudah ada</span>" : "<span style='color:#b91c1c'>✕ Belum ada</span>";
+                    return existing ? "<span style='color:#0f766e'>✓ Sudah ada</span>" :
+                        "<span style='color:#b91c1c'>✕ Belum ada</span>";
                 };
 
-                const fileFoto = checkFile("file-foto");
+                const fileBiodata = checkFile("file-biodata");
+                const fileRapor = checkFile("file-rapor");
+                const fileIjazah = checkFile("file-ijazah");
+                const fileSKL = checkFile("file-skl");
+                const fileAkta = checkFile("file-akta-kelahiran");
                 const fileKK = checkFile("file-kk");
+                const fileFoto = checkFile("file-pas-foto");
+                const fileKtpAyah = checkFile("file-ktp-ayah");
+                const fileKtpIbu = checkFile("file-ktp-ibu");
+                const fileKip = checkFile("file-kip");
+                const fileBpjs = checkFile("file-bpjs");
+
+
+
                 const fileAkte = checkFile("file-akte");
 
                 const summaryHtml = `
@@ -602,18 +1122,115 @@
                         <div class="modal-summary-label">Asal Sekolah</div>
                         <div class="modal-summary-value">${asalSekolah}</div>
                     </div>
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Anak Ke</div>
+                        <div class="modal-summary-value">${anakKe}</div>
+                    </div>
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Jumlah Saudara</div>
+                        <div class="modal-summary-value">${jumlahSaudara}</div>
+                    </div>
                     <br>
+                    
+
                     <div class="modal-summary-item">
                         <div class="modal-summary-label">Orang Tua / Wali</div>
-                        <div class="modal-summary-value">Ayah: ${namaAyah} <br> Ibu: ${namaIbu} <br> HP: ${noHp}</div>
+                        <div class="modal-summary-value">Ayah: ${namaAyah}</div>
                     </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">No KK</div>
+                        <div class="modal-summary-value">${noKk}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Nik Ayah</div>
+                        <div class="modal-summary-value">${nikAyah}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Umur Ayah</div>
+                        <div class="modal-summary-value">${umurAyah}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Tempat Lahir Ayah</div>
+                        <div class="modal-summary-value">${tempatLahirAyah}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Pendidikan Ayah</div>
+                        <div class="modal-summary-value">${pendidikanTerakhirAyah}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Alamat Ayah</div>
+                        <div class="modal-summary-value">${alamatAyah}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">No Hp Ayah</div>
+                        <div class="modal-summary-value">${noHpAyah}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Kode Pos</div>
+                        <div class="modal-summary-value">${kodePos}</div>
+                    </div>
+
+
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Orang Tua / Wali</div>
+                        <div class="modal-summary-value">Ibu: ${namaIbu}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Nik Ibu</div>
+                        <div class="modal-summary-value">${nikIbu}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Umur Ibu</div>
+                        <div class="modal-summary-value">${umurIbu}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Tempat Lahir Ibu</div>
+                        <div class="modal-summary-value">${tempatLahiribu}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Pendidikan Ibu</div>
+                        <div class="modal-summary-value">${pendidikanTerakhiribu}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Alamat Ibu</div>
+                        <div class="modal-summary-value">${alamatIbu}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">No Hp Ibu</div>
+                        <div class="modal-summary-value">${noHpibu}</div>
+                    </div>
+
+
                         <br>
                     <div class="modal-summary-item" style="border:none">
                         <div class="modal-summary-label">Kelengkapan Berkas</div>
                         <div class="modal-summary-value">
-                            Pas Foto: ${fileFoto}<br>
-                            KK: ${fileKK}<br>
-                            Akte: ${fileAkte}
+                            Biodata : ${fileBiodata}<br>
+                            Rapor : ${fileRapor}<br>
+                            Ijazah : ${fileIjazah}<br>
+                            SKL : ${fileSKL}<br>
+                            Akta Kelahiran : ${fileAkta}<br>
+                            Kartu Keluarga : ${fileKK}<br>
+                            Pas Foto : ${fileFoto}<br>
+                            Ktp Ayah : ${fileKtpAyah}<br>
+                            Ktp Ibu : ${fileKtpIbu}<br>
+                            KIP/PKH/KIS : ${fileKip}<br>
+                            BPJS : ${fileBpjs}<br>
                         </div>
                     </div>
                 `;
@@ -624,15 +1241,15 @@
 
             // Step 1: Click Simpan -> Show Modal with Summary
             if (form && modal) {
-                if(btnSubmit) btnSubmit.addEventListener("click", showSummaryModal);
-                if(btnFormSubmit) btnFormSubmit.addEventListener("click", showSummaryModal);
+                if (btnSubmit) btnSubmit.addEventListener("click", showSummaryModal);
+                if (btnFormSubmit) btnFormSubmit.addEventListener("click", showSummaryModal);
             }
 
             // Step 2: Click Simpan in Modal -> Show SweetAlert Confirmation
             if (btnModalSave) {
                 btnModalSave.addEventListener('click', () => {
                     closeModal();
-                    
+
                     Swal.fire({
                         title: 'Apakah Anda Yakin?',
                         text: "Data yang disimpan tidak dapat diperbaiki lagi. Pastikan semua data sudah benar.",
@@ -653,4 +1270,5 @@
     </script>
     <script src="{{ asset('landing/dashboard.js') }}"></script>
 </body>
+
 </html>

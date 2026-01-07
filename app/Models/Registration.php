@@ -24,13 +24,43 @@ class Registration extends Model
         'nik',
         'alamat',
         'asal_sekolah',
+        'anak_ke',
+        'jumlah_saudara',
+
+        // Data Orang Tua/Wali
+        // Data Ayah
         'nama_ayah',
-        'nama_ibu',
-        'no_hp_wali',
-        'foto',
-        'kk_file',
-        'akte_file',
-        'ijazah_file',
+        'no_kk', 
+        'nik_ayah',
+        'umur_ayah',
+        'tempat_lahir_ayah',
+        'tanggal_lahir_ayah',
+        'pendidikan_terakhir_ayah',
+        'alamat_lengkap_ayah',
+        'no_hp_ayah',
+        'kode_pos',
+
+        // Data Ibu
+        'nik_ibu',
+        'umur_ibu',
+        'tempat_lahir_ibu',
+        'tanggal_lahir_ibu',
+        'pendidikan_terakhir_ibu',
+        'alamat_lengkap_ibu',
+        'no_hp_ibu',
+
+        // Berkas
+        'file_biodata',
+        'file_rapor',
+        'file_ijazah',
+        'file_skl',
+        'file_akta_kelahiran',
+        'file_kk',
+        'file_pas_foto',
+        'file_ktp_ayah',
+        'file_ktp_ibu',
+        'file_kip',
+        'file_bpjs',
     ];
 
     public function user()
