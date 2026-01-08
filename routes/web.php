@@ -69,6 +69,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/admin/pendaftar/{id}', [RegistrationController::class, 'update'])->name('admin.pendaftar.update');
     Route::delete('/admin/pendaftar/{id}', [RegistrationController::class, 'destroy'])->name('admin.pendaftar.destroy');
 
+<<<<<<< Updated upstream
     Route::get('/admin/detail-pendaftar/{id}', [RegistrationController::class, 'detail']);
     Route::post('/admin/update-status-pendaftaran/{id}', [RegistrationController::class, 'updateStatus']);
 
@@ -76,6 +77,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::put('/admin/update-pendaftar/{id}', [RegistrationController::class, 'updateDataRegister']);
 
 
+=======
+    Route::get('/admin/tahun', [\App\Http\Controllers\TahunAjaranController::class, 'index'])->name('admin.tahun.index');
+    Route::post('/admin/tahun', [\App\Http\Controllers\TahunAjaranController::class, 'store'])->name('admin.tahun.store');
+    Route::patch('/admin/tahun/{id}/status', [\App\Http\Controllers\TahunAjaranController::class, 'updateStatus'])->name('admin.tahun.updateStatus');
+    Route::delete('/admin/tahun/{id}', [\App\Http\Controllers\TahunAjaranController::class, 'destroy'])->name('admin.tahun.destroy');
+>>>>>>> Stashed changes
 
     Route::get('/admin/pengumuman', function () {
         return 'Halaman Pengumuman (Coming Soon)';
