@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\SantriController;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Registration;
 
 
 /*
@@ -35,11 +36,31 @@ Route::middleware(['auth', 'role:santri'])->group(function () {
     Route::get('/santri/dashboard', [SantriController::class, 'dashboard'])->name('santri.dashboard');
     Route::put('/santri/update', [SantriController::class, 'update'])->name('santri.update');
     Route::get('/santri/password/change', [SantriController::class, 'showChangePasswordForm'])->name('password.change');
-    Route::post('/santri/password/update', [SantriController::class, 'changePassword'])->name('password.update');
+    // Route::post('/santri/password/update', [SantriController::class, 'changePassword'])->name('password.update');
+    Route::post('register/update-password/{id}', [RegistrationController::class, 'changePassword']);
+
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
+
+        $totalPendaftarTahunIni = Registration::where('tahun_ajaran', date('Y'))->count();
+        $dataPending = Registration::where('status', 'pending')->count();
+        $dataBerkasBlmLengkap = Registration::where('status', 'incomplete_file')->count();
+        $dataDitolak = Registration::where('status', 'reject')->count();
+        $dataDiterima = Registration::where('status', 'accept')->count();
+
+        // $ = Registration::where('tahun_ajaran', date('Y'))->count();
+
+        return view('admin.dashboard', [
+            'totalPendaftar' => $totalPendaftarTahunIni,
+            'totalPending' => $dataPending,
+            'totalBerkasBlmLengkap' => $dataBerkasBlmLengkap,
+            'totalDitolak' => $dataDitolak,
+            'totalDiterima' => $dataDiterima,
+        ]);
+
+
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
@@ -47,6 +68,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/pendaftar/{id}', [RegistrationController::class, 'show'])->name('admin.pendaftar.show');
     Route::put('/admin/pendaftar/{id}', [RegistrationController::class, 'update'])->name('admin.pendaftar.update');
     Route::delete('/admin/pendaftar/{id}', [RegistrationController::class, 'destroy'])->name('admin.pendaftar.destroy');
+
+    Route::get('/admin/detail-pendaftar/{id}', [RegistrationController::class, 'detail']);
+    Route::post('/admin/update-status-pendaftaran/{id}', [RegistrationController::class, 'updateStatus']);
+
+    Route::get('/admin/edit-pendaftar/{id}', [RegistrationController::class, 'edit']);
+        Route::put('/admin/update-pendaftar/{id}', [RegistrationController::class, 'updateDataRegister']);
+
 
 
     Route::get('/admin/pengumuman', function () {

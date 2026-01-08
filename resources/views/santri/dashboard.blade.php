@@ -14,12 +14,118 @@
 
 </head>
 
+<style>
+    /* modal */
+    /* Overlay Modal */
+    .modal-overlay {
+        display: none;
+        /* Tersembunyi secara default */
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+    }
+
+    /* Kotak Modal */
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 24px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    .close-btn {
+        font-size: 28px;
+        cursor: pointer;
+        color: #888;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    /* Utility Button (opsional jika belum ada di CSS Anda) */
+    .btn--primary {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn--secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
 <body class="dash">
+
+    @session('success')
+        <script>
+            alert("Berhasil merubah password");
+        </script>
+    @endsession
+
+    @session('successLengkapiBerkas')
+        <script>
+            alert("Berhasil melengkapi data");
+        </script>
+    @endsession
+
     <a class="skip-link" href="#main">Lewati ke konten</a>
 
     <!-- TOPBAR -->
     <header class="topbar">
-        <div class="container topbar__inner">
+        <div class="topbar__inner container">
             <div class="brand">
                 <div class="brand__mark">PSB</div>
                 <div>
@@ -41,7 +147,29 @@
 
                 <div class="dashActions">
                     {{-- opsional: arahkan ke halaman ubah password --}}
-                    <a href="{{ route('password.change') }}" class="btn btn--outline dashBtnSm">Ubah Password</a>
+
+                    <button id="openModalBtn" class="btn btn--outline dashBtnSm">Ubah Password</button>
+
+                    <div id="passwordModal" class="modal-overlay">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Ubah Password</h3>
+                                <span class="close-btn">&times;</span>
+                            </div>
+                            <form id="passwordForm" method="post"
+                                action="{{ url('register/update-password/' . Auth::user()->id) }}">
+                                @csrf
+                                <div class="form-group">
+                                    <label>Password Baru</label>
+                                    <input type="text" maxlength="20" name="password" class="field__input" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn--secondary close-btn-alt">Batal</button>
+                                    <button type="submit" class="btn btn--primary">Simpan Perubahan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
@@ -55,7 +183,7 @@
     <!-- BACKDROP -->
     <div class="dashBackdrop" aria-hidden="true"></div>
 
-    <main id="main" class="container dashWrap">
+    <main id="main" class="dashWrap container">
         <!-- Alerts -->
         @if (session('success'))
             <div class="dashAlert dashAlert--success" role="status" aria-live="polite">
@@ -90,7 +218,9 @@
                     <span class="dashStatusPill dashStatusPill--{{ $registration->status }}">
                         @if ($registration->status == 'pending')
                             Menunggu Verifikasi
-                        @elseif($registration->status == 'accepted')
+                        @elseif($registration->status == 'incomplete_file')
+                            Berkas Belum Lengkap
+                        @elseif($registration->status == 'accept')
                             Diterima
                         @else
                             Ditolak
@@ -115,6 +245,10 @@
                     <span class="dashHint">
                         Lengkapi biodata & upload berkas untuk mempercepat verifikasi.
                     </span>
+
+                    @if ($registration->keterangan)
+                        <span class="dashHint">Keterangan dari Admin: {{ $registration->keterangan }}</span>
+                    @endif
                 </div>
             </div>
 
@@ -153,7 +287,8 @@
                 </div>
             </div>
 
-            <form class="dashForm" action="{{ route('santri.update') }}" method="POST" enctype="multipart/form-data">
+            <form class="dashForm" action="{{ route('santri.update') }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <!-- Tabs / Steps -->
@@ -271,7 +406,6 @@
                                         <div class="dashError" data-error-for="jumlah_saudara"></div>
                                     </label>
 
-
                                 </div>
 
                                 <div class="dashPanelActions">
@@ -291,7 +425,6 @@
                                             data-required="1" maxlength="16" minlength="16">
                                         <div class="dashError" data-error-for="no_kk"></div>
                                     </label>
-
 
                                     <label class="field">
                                         <span class="field__label">NIK Ayah</span>
@@ -317,7 +450,6 @@
                                             required data-required="1">
                                         <div class="dashError" data-error-for="tanggal_lahir_ayah"></div>
                                     </label>
-
 
                                     <label class="field">
                                         <span class="field__label">Umur Ayah</span>
@@ -397,7 +529,6 @@
                                             data-required="1" maxlength="5" placeholder="Contoh: 12345">
                                         <div class="dashError" data-error-for="kode_pos"></div>
                                     </label>
-
 
                                     {{-- ========================= Data Ibu ============================================== --}}
 
@@ -497,7 +628,6 @@
                                         <div class="dashError" data-error-for="no_hp_ibu"></div>
                                     </label>
 
-
                                 </div>
 
                                 <div class="dashPanelActions dashPanelActions--between">
@@ -508,12 +638,10 @@
                                 </div>
                             </section>
 
-
                             {{-- UBAH KODINGAN DIBAWAH INI  --}}
                             <!-- Panel: Upload Berkas -->
                             <section id="tab-berkas" class="tabs__panel" role="tabpanel">
                                 <div class="dashUploadGrid">
-
 
                                     <!-- File Biodata -->
                                     <div class="dashUploadCard">
@@ -526,7 +654,8 @@
                                             <div class="dashDropzone__icon">⬆</div>
                                             <div class="dashDropzone__text">
                                                 <div class="dashDropzone__strong">Klik untuk upload</div>
-                                                <div class="dashDropzone__muted" data-file-name="file-biodata">Belum
+                                                <div class="dashDropzone__muted" data-file-name="file-biodata">
+                                                    Belum
                                                     ada
                                                     file</div>
                                             </div>
@@ -541,7 +670,7 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_biodata) }}"
+                                                    href="{{ asset('Berkas/' . $registration->file_biodata) }}"
                                                     target="_blank">Lihat</a>
                                             </div>
                                         @endif
@@ -573,8 +702,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_rapor) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_rapor) }}"
+                                                    target="_blank">Lihat</a>accept
                                             </div>
                                         @endif
                                     </div>
@@ -590,7 +719,8 @@
                                             <div class="dashDropzone__icon">⬆</div>
                                             <div class="dashDropzone__text">
                                                 <div class="dashDropzone__strong">Klik untuk upload</div>
-                                                <div class="dashDropzone__muted" data-file-name="file-ijazah">Belum
+                                                <div class="dashDropzone__muted" data-file-name="file-ijazah">
+                                                    Belum
                                                     ada
                                                     file</div>
                                             </div>
@@ -605,8 +735,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_ijazah) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_ijazah) }}"
+                                                    target="_blank">Lihat</a>
                                             </div>
                                         @endif
                                     </div>
@@ -614,7 +744,8 @@
                                     <!-- File SKL -->
                                     <div class="dashUploadCard">
                                         <div class="dashUploadCard__head">
-                                            <div class="dashUploadCard__title">Berkas SKL (Surat Keterangan Lulus jika
+                                            <div class="dashUploadCard__title">Berkas SKL (Surat Keterangan Lulus
+                                                jika
                                                 ada)</div>
                                             <div class="dashUploadCard__meta">PDF • maks 2MB</div>
                                         </div>
@@ -638,8 +769,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_skl) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_skl) }}"
+                                                    target="_blank">Lihat</a>
                                             </div>
                                         @endif
                                     </div>
@@ -671,8 +802,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_akta_kelahiran) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_akta_kelahiran) }}"
+                                                    target="_blank">Lihat</a>
                                             </div>
                                         @endif
                                     </div>
@@ -703,8 +834,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_kk) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_kk) }}"
+                                                    target="_blank">Lihat</a>
                                             </div>
                                         @endif
                                     </div>
@@ -723,7 +854,8 @@
                                                 <div class="dashDropzone__muted" data-file-name="file-pas-foto">
                                                     Belum
                                                     ada
-                                                    file</div>
+                                                    file
+                                                </div>
                                             </div>
                                         </label>
                                         <input id="file-pas-foto" type="file" name="file_pas_foto"
@@ -736,8 +868,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_pas_foto) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_pas_foto) }}"
+                                                    target="_blank">Lihat</a>
                                             </div>
                                         @endif
                                     </div>
@@ -756,7 +888,8 @@
                                                 <div class="dashDropzone__muted" data-file-name="file-ktp-ayah">
                                                     Belum
                                                     ada
-                                                    file</div>
+                                                    file
+                                                </div>
                                             </div>
                                         </label>
                                         <input id="file-ktp-ayah" type="file" name="file_ktp_ayah"
@@ -769,8 +902,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_ktp_ayah) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_ktp_ayah) }}"
+                                                    target="_blank">Lihat</a>
                                             </div>
                                         @endif
                                     </div>
@@ -789,7 +922,8 @@
                                                 <div class="dashDropzone__muted" data-file-name="file-ktp-ibu">
                                                     Belum
                                                     ada
-                                                    file</div>
+                                                    file
+                                                </div>
                                             </div>
                                         </label>
                                         <input id="file-ktp-ibu" type="file" name="file_ktp_ibu"
@@ -802,8 +936,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_ktp_ibu) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_ktp_ibu) }}"
+                                                    target="_blank">Lihat</a>
                                             </div>
                                         @endif
                                     </div>
@@ -822,7 +956,8 @@
                                                 <div class="dashDropzone__muted" data-file-name="file-kip">
                                                     Belum
                                                     ada
-                                                    file</div>
+                                                    file
+                                                </div>
                                             </div>
                                         </label>
                                         <input id="file-kip" type="file" name="file_kip" class="dashFileInput"
@@ -835,8 +970,8 @@
                                             <div class="dashUploaded">
                                                 <span class="dashUploaded__badge">Sudah diupload</span>
                                                 <a class="link"
-                                                    href="{{ asset('storage/' . $registration->file_kip) }}"
-                                                    target="_blank">Lihat</a>accept="image/*"
+                                                    href="{{ asset('Berkas/' . $registration->file_kip) }}"
+                                                    target="_blank">Lihat</a>
                                             </div>
                                         @endif
                                     </div>
@@ -851,28 +986,29 @@
                                         <label class="dashDropzone" for="file-bpjs">
                                             <div class="dashDropzone__icon">⬆</div>
                                             <div class="dashDropzone__text">
-                                                <db")iv class="dashDropzone__strong">Klik untuk upload
+                                                <div class="dashDropzone__strong">Klik untuk upload
+                                                </div>
+                                                <div class="dashDropzone__muted" data-file-name="file-bpjs">
+                                                    Belum
+                                                    ada
+                                                    file</div>
                                             </div>
-                                            <div class="dashDropzone__muted" data-file-name="file-bpjs">
-                                                Belum
-                                                ada
-                                                file</div>
-                                    </div>
-                                    </label>
-                                    <input id="file-bpjs" type="file" name="file_bpjs" class="dashFileInput"
-                                        accept=".pdf" data-required-file="1"
-                                        data-existing="{{ $registration->file_bpjs ? '1' : '0' }}" data-max-mb="2">
-                                    <div class="dashError" data-error-for="file-kk"></div>
+                                        </label>
+                                        <input id="file-bpjs" type="file" name="file_bpjs" class="dashFileInput"
+                                            accept=".pdf" data-required-file="1"
+                                            data-existing="{{ $registration->file_bpjs ? '1' : '0' }}"
+                                            data-max-mb="2">
+                                        <div class="dashError" data-error-for="file-kk"></div>
 
-                                    @if ($registration->file_bpjs)
-                                        <div class="dashUploaded">
-                                            <span class="dashUploaded__badge">Sudah diupload</span>
-                                            <a class="link"
-                                                href="{{ asset('storage/' . $registration->file_bpjs) }}"
-                                                target="_blank">Lihat</a>accept="image/*"
-                                        </div>
-                                    @endif
-                                    </db>
+                                        @if ($registration->file_bpjs)
+                                            <div class="dashUploaded">
+                                                <span class="dashUploaded__badge">Sudah diupload</span>
+                                                <a class="link"
+                                                    href="{{ asset('Berkas/' . $registration->file_bpjs) }}"
+                                                    target="_blank">Lihat</a>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <div class="dashPanelActions dashPanelActions--between">
@@ -884,7 +1020,8 @@
                                 </div>
 
                                 <div class="dashFootHint">
-                                    Dengan menekan “Simpan”, Anda menyatakan data yang diisi benar sesuai dokumen.
+                                    Dengan menekan “Simpan”, Anda menyatakan data yang diisi benar sesuai
+                                    dokumen.
                                 </div>
                             </section>
                         </div>
@@ -1062,8 +1199,8 @@
 
                 // Data Ibu
                 const namaIbu = document.getElementById("nama_ibu")?.value || "-";
-                const nikIbu = document.getElementById("nik_Ibu")?.value || "-";
-                const umurIbu = document.getElementById("umur_Ibu")?.value || "-";
+                const nikIbu = document.getElementById("nik_ibu")?.value || "-";
+                const umurIbu = document.getElementById("umur_ibu")?.value || "-";
                 const tempatLahiribu = document.getElementById("tempat_lahir_ibu")?.value || "-";
                 const tanggalLahirIbu = document.getElementById("tanggal_lahir_Ibu")?.value || "-";
                 const pendidikanTerakhiribu = document.getElementById("pendidikan_terakhir_ibu")?.value ||
@@ -1266,6 +1403,49 @@
                     });
                 });
             }
+
+            const pwdModalContainer = document.getElementById('passwordModal');
+            const pwdTriggerBtn = document.getElementById('openModalBtn');
+            const pwdCloseControls = document.querySelectorAll('.close-btn, .close-btn-alt');
+            const pwdFormElement = document.getElementById('passwordForm');
+
+            // Fungsi membuka modal password
+            pwdTriggerBtn.onclick = () => {
+                pwdModalContainer.style.display = 'block';
+            }
+
+            // Fungsi menutup modal (klik tombol silang atau batal)
+            pwdCloseControls.forEach(control => {
+                control.onclick = () => {
+                    pwdModalContainer.style.display = 'none';
+                }
+            });
+
+            // Menutup modal jika user mengklik area di luar kotak modal
+            window.onclick = (event) => {
+                if (event.target == pwdModalContainer) {
+                    pwdModalContainer.style.display = 'none';
+                }
+            }
+
+            // Logika saat form dikirim
+            // pwdFormElement.onsubmit = (e) => {
+            //     e.preventDefault();
+
+            //     // Contoh sederhana validasi kecocokan password di sisi client
+            //     const newPass = pwdFormElement.new_password.value;
+            //     const confirmPass = pwdFormElement.confirm_password.value;
+
+            //     if (newPass !== confirmPass) {
+            //         alert('Konfirmasi password baru tidak cocok!');
+            //         return;
+            //     }
+
+            //     console.log('Data siap dikirim ke server...');
+            //     pwdModalContainer.style.display = 'none';
+            //     pwdFormElement.reset(); // Mengosongkan form setelah sukses
+            // };
+
         });
     </script>
     <script src="{{ asset('landing/dashboard.js') }}"></script>

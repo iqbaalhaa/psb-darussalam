@@ -13,7 +13,7 @@ class Registration extends Model
         'user_id',
         'nama',
         'jenjang',
-        'email',
+        // 'email',
         'wa',
         'status',
         'is_locked',
@@ -30,7 +30,7 @@ class Registration extends Model
         // Data Orang Tua/Wali
         // Data Ayah
         'nama_ayah',
-        'no_kk', 
+        'no_kk',
         'nik_ayah',
         'umur_ayah',
         'tempat_lahir_ayah',
@@ -42,12 +42,15 @@ class Registration extends Model
 
         // Data Ibu
         'nik_ibu',
+        'nama_ibu',
         'umur_ibu',
         'tempat_lahir_ibu',
         'tanggal_lahir_ibu',
         'pendidikan_terakhir_ibu',
         'alamat_lengkap_ibu',
         'no_hp_ibu',
+
+        'keterangan',
 
         // Berkas
         'file_biodata',

@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('jenjang');
-            $table->string('email');
+            // $table->string('email');
             $table->string('wa');
-            $table->string('status')->default('pending'); // pending, accepted, rejected
+            // $table->string('status')->default('pending'); // pending, accepted, rejected
             $table->timestamps();
         });
     }

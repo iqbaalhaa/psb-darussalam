@@ -262,6 +262,6 @@ class SantriController extends Controller
 
         $registration->update($data);
 
-        return redirect()->route('santri.dashboard')->with('success', 'Data berhasil diperbarui.');
+        return redirect()->route('santri.dashboard')->with('successLengkapiBerkas', 'Data berhasil diperbarui.');
     }
 }

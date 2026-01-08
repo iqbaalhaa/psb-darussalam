@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('registrations', function (Blueprint $table) {
-            
+
             $table->year('tahun_ajaran')->default(date('Y'));
             // Data Pertama
-            
+
             $table->string('tempat_lahir')->nullable();
             $table->date('tanggal_lahir')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
@@ -37,8 +37,7 @@ return new class extends Migration
             $table->string('alamat_lengkap_ayah')->nullable();
             $table->string('no_hp_ayah')->nullable();
             $table->string('kode_pos')->nullable();
-            
-            
+
             $table->string('nama_ibu')->nullable();
             $table->string('nik_ibu')->nullable();
             $table->integer('umur_ibu')->nullable();
@@ -60,7 +59,9 @@ return new class extends Migration
             $table->string('file_ktp_ibu')->nullable();
             $table->string('file_kip')->nullable();
             $table->string('file_bpjs')->nullable();
-        
+
+            $table->string('status')->default('pending'); // pending, accepted, rejected
+            $table->string('keterangan')->nullable();
         });
     }
 
