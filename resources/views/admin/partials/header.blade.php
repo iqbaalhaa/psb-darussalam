@@ -8,12 +8,6 @@
   </div>
 
   <div class="right">
-    <button class="icon-btn" data-toggle-theme title="Toggle Theme">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M21 12.8A8.5 8.5 0 0 1 11.2 3 7 7 0 1 0 21 12.8Z" fill="currentColor" opacity=".9"/>
-      </svg>
-    </button>
-
     <button class="icon-btn" title="Notifikasi" onclick="alert('Notifikasi dummy')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
