@@ -523,6 +523,16 @@
                                     </label>
 
                                     <label class="field">
+                                        <span class="field__label">Pekerjaan Ayah</span>
+                                        <input id="pekerjaan_ayah" type="text" name="pekerjaan_ayah"
+                                            class="field__input"
+                                            value="{{ old('pekerjaan_ayah', $registration->pekerjaan_ayah) }}"
+                                            required data-required="1" maxlength="250"
+                                            placeholder="Contoh: Wirausaha">
+                                        <div class="dashError" data-error-for="pekerjaan_ayah"></div>
+                                    </label>
+
+                                    <label class="field">
                                         <span class="field__label">Kode Pos</span>
                                         <input id="kode_pos" type="text" name="kode_pos" class="field__input"
                                             value="{{ old('kode_pos', $registration->kode_pos) }}" required
@@ -616,6 +626,15 @@
                                             value="{{ old('alamat_lengkap_ibu', $registration->alamat_lengkap_ibu) }}"
                                             maxlength="250" required data-required="1">
                                         <div class="dashError" data-error-for="alamat_lengkap_ibu"></div>
+                                    </label>
+
+                                    <label class="field">
+                                        <span class="field__label">Pekerjaan Ibu</span>
+                                        <input id="pekerjaan_ibu" type="text" name="pekerjaan_ibu"
+                                            class="field__input"
+                                            value="{{ old('pekerjaan_ibu', $registration->pekerjaan_ibu) }}" required
+                                            data-required="1" maxlength="250" placeholder="Contoh: Wirausaha">
+                                        <div class="dashError" data-error-for="pekerjaan_ibu"></div>
                                     </label>
 
                                     <label class="field">
@@ -1196,6 +1215,7 @@
                 const alamatAyah = document.getElementById("alamat_lengkap_ayah")?.value || "-";
                 const noHpAyah = document.getElementById("no_hp_ayah")?.value || "-";
                 const kodePos = document.getElementById("kode_pos")?.value || "-";
+                const pekerjaanAyah = document.getElementById("pekerjaan_ayah")?.value || "-";
 
                 // Data Ibu
                 const namaIbu = document.getElementById("nama_ibu")?.value || "-";
@@ -1206,7 +1226,10 @@
                 const pendidikanTerakhiribu = document.getElementById("pendidikan_terakhir_ibu")?.value ||
                     "-";
                 const alamatIbu = document.getElementById("alamat_lengkap_ibu")?.value || "-";
+                const pekerjaanIbu = document.getElementById("pekerjaan_ibu")?.value || "-";
                 const noHpibu = document.getElementById("no_hp_ibu")?.value || "-";
+
+
 
                 // Files check helper
                 const checkFile = (id) => {
@@ -1306,6 +1329,12 @@
                     </div>
 
                     <div class="modal-summary-item">
+                        <div class="modal-summary-label">Pekerjaan Ayah</div>
+                        <div class="modal-summary-value">${pekerjaanAyah}</div>
+                    </div>
+
+
+                    <div class="modal-summary-item">
                         <div class="modal-summary-label">No Hp Ayah</div>
                         <div class="modal-summary-value">${noHpAyah}</div>
                     </div>
@@ -1335,6 +1364,11 @@
                     <div class="modal-summary-item">
                         <div class="modal-summary-label">Tempat Lahir Ibu</div>
                         <div class="modal-summary-value">${tempatLahiribu}</div>
+                    </div>
+
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Pekerjaan Ibu</div>
+                        <div class="modal-summary-value">${pekerjaanIbu}</div>
                     </div>
 
                     <div class="modal-summary-item">

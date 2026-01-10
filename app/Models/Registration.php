@@ -37,6 +37,7 @@ class Registration extends Model
         'tanggal_lahir_ayah',
         'pendidikan_terakhir_ayah',
         'alamat_lengkap_ayah',
+        'pekerjaan_ayah',
         'no_hp_ayah',
         'kode_pos',
 
@@ -48,9 +49,11 @@ class Registration extends Model
         'tanggal_lahir_ibu',
         'pendidikan_terakhir_ibu',
         'alamat_lengkap_ibu',
+        'pekerjaan_ibu',
         'no_hp_ibu',
 
         'keterangan',
+        'status_pembayaran',
 
         // Berkas
         'file_biodata',

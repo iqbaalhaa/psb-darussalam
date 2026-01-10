@@ -303,12 +303,47 @@
         </div>
     </div>
 
+    {{-- Modal Status Pembayaran --}}
+    <div id="modalStatusPembayaran" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Status Pendaftaran</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            {{-- FORM UPDATE STATUS PEMBAYARAN --}}
+            <form id="formUpdateStatusPembayaran" action="{{ url('admin/update-status-pembayaran/' . $data->id) }}"
+                method="POST">
+                @csrf
+                <div class="modal-body">
+                    <p>Pilih Status Baru:</p>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="status_pembayaran" value="belum_lunas"
+                                {{ $data->status_pembayaran == 'belum_lunas' ? 'checked' : '' }}>
+                            Belum Lunas
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="status_pembayaran" value="lunas"
+                                {{ $data->status_pembayaran == 'lunas' ? 'checked' : '' }}>
+                            Lunas
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-close close-modal-pembayaran">Batal</button>
+                    <button type="submit" class="btn-save">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="container-profile">
         <div class="card header-card">
             <div class="header-top">
                 <h2>Profil Siswa: {{ $data->nama }}</h2>
                 <div class="header-actions">
-                    <button id="btnOpenStatus" class="btn-status">Update Status</button>
+                    <button id="btnOpenStatus" class="btn-status">Update Status Penerimaan</button>
+                    <button id="btnOpenStatusPembayaran" class="btn-status">Update Status Pembayaran</button>
                     {{-- <span class="badge {{ $data->is_locked ? "locked" : "unlocked" }}"> --}}
 
                     @if ($data->status == 'pending')
@@ -327,6 +362,21 @@
                 <div class="info-item">
                     <label>Keterangan</label>
                     <span>{{ $data->keterangan }}</span>
+                </div>
+            </div>
+            <div class="header-grid">
+                <div class="info-item">
+                    <label>Status Pembayaran</label>
+                    <span>{{ $data->status_pembayaran == 'belum_lunas' ? 'Belum Lunas' : 'Lunas' }}</span>
+                </div>
+            </div>
+            <div class="header-grid">
+                <div class="info-item">
+                    <label>Dokumen Formulir</label>
+                    <a href="{{ url('form-pendaftaran-pdf/' . $data->id) }}">Dok Pendaftaran</a><br>
+                    <a href="{{ url('form-pernyataan-pdf/' . $data->id) }}">Dok Pernyataan</a><br>
+                    <a href="{{ url('form-janji-santri-pdf/' . $data->id) }}">Dok Janji Santri</a><br>
+                    <a href="{{ url('form-syarat-pendaftaran') }}">Syarat Pendaftaran</a>
                 </div>
             </div>
             <hr>
@@ -489,7 +539,7 @@
 
     @session('success')
         <script>
-            alert("Berhasil mengupdate status")
+            alert("{{ session('success') }}")
         </script>
     @endsession
 
@@ -497,13 +547,23 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             $(document).ready(function() {
-                // Membuka Modal
+                // Membuka Modal Status Penerimaan
                 $('#btnOpenStatus').on('click', function() {
                     $('#modalStatus').fadeIn(300);
                 });
 
+                // Membuaka Modal Status Pembayaran
+                $('#btnOpenStatusPembayaran').on('click', function() {
+                    $('#modalStatusPembayaran').fadeIn(300);
+                });
+
                 // Menutup Modal (Klik X, tombol Batal, atau klik di luar modal)
                 $('.close-modal').on('click', function() {
+                    $('#modalStatus').fadeOut(300);
+                });
+
+                // Menutup Modal (Klik X, tombol Batal, atau klik di luar modal)
+                $('.close-modal-pembayaran').on('click', function() {
                     $('#modalStatus').fadeOut(300);
                 });
 

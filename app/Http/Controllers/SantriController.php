@@ -50,6 +50,7 @@ class SantriController extends Controller
             'pendidikan_terakhir_ayah' => 'required|string',
             'alamat_lengkap_ayah' => 'required|string',
             'no_hp_ayah' => 'required|string',
+            'pekerjaan_ayah' => 'required|string',
             'kode_pos' => 'required|string',
 
             // Data Ibu
@@ -60,6 +61,7 @@ class SantriController extends Controller
             'tanggal_lahir_ibu' => 'required|date',
             'pendidikan_terakhir_ibu' => 'required|string',
             'alamat_lengkap_ibu' => 'required|string',
+            'pekerjaan_ibu' => 'required|string',
             'no_hp_ibu' => 'required|string',
 
             // Berkas

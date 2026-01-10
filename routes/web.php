@@ -6,6 +6,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\SantriController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Registration;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 /*
@@ -59,9 +60,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             'totalDitolak' => $dataDitolak,
             'totalDiterima' => $dataDiterima,
         ]);
-
-
-        return view('admin.dashboard');
     })->name('admin.dashboard');
 
     Route::get('/admin/pendaftar', [RegistrationController::class, 'index'])->name('admin.pendaftar.index');
@@ -73,7 +71,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/update-status-pendaftaran/{id}', [RegistrationController::class, 'updateStatus']);
 
     Route::get('/admin/edit-pendaftar/{id}', [RegistrationController::class, 'edit']);
-        Route::put('/admin/update-pendaftar/{id}', [RegistrationController::class, 'updateDataRegister']);
+    Route::put('/admin/update-pendaftar/{id}', [RegistrationController::class, 'updateDataRegister']);
+
+    Route::post('/admin/update-status-pembayaran/{id}', [RegistrationController::class, 'updateStatusPembayaran']);
+    
+    Route::get('/form-pendaftaran-pdf/{id}', [RegistrationController::class, 'dokPendaftaran']);
+    Route::get('/form-pernyataan-pdf/{id}', [RegistrationController::class, 'dokPernyataan']);
+    Route::get('/form-janji-santri-pdf/{id}', [RegistrationController::class, 'dokJanjiSantri']);
+    Route::get('/form-syarat-pendaftaran', [RegistrationController::class, 'dokSyaratPendaftaran']);
 
 
 
@@ -89,3 +94,39 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return 'Halaman Akun (Coming Soon)';
     })->name('admin.akun.index');
 });
+
+// Test Pdf :
+// Route::get('/form-pendaftaran-pdf/{id}', function ($id) {
+
+//     $data = Registration::findOrFail($id);
+
+//     $pdf = Pdf::loadView('admin.pendaftar.form_pendaftaran', [
+//         'data' => $data,
+//     ])->setPaper('A4', 'portrait');
+
+//     return $pdf->stream('formulir-pendaftaran-dummy.pdf');
+// });
+
+// Route::get('/form-pernyataan-pdf', function () {
+//     $pdf = Pdf::loadView('admin.pendaftar.form_pernyataan')
+//         ->setPaper('A4', 'portrait');
+
+//     return $pdf->stream('formulir-pernyataan-dummy.pdf');
+// });
+
+// Route::get('/form-janji-santri-pdf/{id}', function ($id) {
+
+//     $data = Registration::findOrFail($id);
+
+//     return Pdf::loadView(
+//         'admin.pendaftar.form_janji_santri',
+//         compact('data')
+//     )->stream('surat-pernyataan-dan-janji-santri.pdf');
+// });
+
+// Route::get('/form-syarat-pendaftaran', function () {
+//     return Pdf::loadView(
+//         'admin.pendaftar.form_syarat_pendaftaran'
+//     )->setPaper('A4', 'portrait')
+//         ->stream('syarat-pendaftaran.pdf');
+// });

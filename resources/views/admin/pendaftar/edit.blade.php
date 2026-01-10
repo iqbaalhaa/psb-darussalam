@@ -156,6 +156,12 @@
                             <input type="text" name="umur_ayah" value="{{ $data->umur_ayah }}">
                         </div>
                         <div class="form-group">
+                            <label>Pekerjaan</label>
+                            <input type="text" name="pekerjaan_ayah" maxlength="245"
+                                value="{{ $data->pekerjaan_ayah }}">
+                        </div>
+
+                        <div class="form-group">
                             <label>Alamat Lengkap Ayah</label>
                             <textarea name="alamat_lengkap_ayah" rows="2" maxlength="250">{{ $data->alamat_lengkap_ayah }}</textarea>
                         </div>
@@ -224,6 +230,13 @@
                             <label>Umur</label>
                             <input type="text" name="umur_ibu" value="{{ $data->umur_ibu }}">
                         </div>
+
+                        <div class="form-group">
+                            <label>Pekerjaan</label>
+                            <input type="text" name="pekerjaan_ibu" maxlength="245"
+                                value="{{ $data->pekerjaan_ibu }}">
+                        </div>
+
                         <div class="form-group">
                             <label>Alamat Lengkap Ibu</label>
                             <textarea name="alamat_lengkap_ibu" rows="2" maxlength="250">{{ $data->alamat_lengkap_ibu }}</textarea>

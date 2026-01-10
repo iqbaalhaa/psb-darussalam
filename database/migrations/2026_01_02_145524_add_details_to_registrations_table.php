@@ -35,6 +35,7 @@ return new class extends Migration
             $table->date('tanggal_lahir_ayah')->nullable();
             $table->string('pendidikan_terakhir_ayah')->nullable();
             $table->string('alamat_lengkap_ayah')->nullable();
+            $table->string('pekerjaan_ayah')->nullable();
             $table->string('no_hp_ayah')->nullable();
             $table->string('kode_pos')->nullable();
 
@@ -45,6 +46,7 @@ return new class extends Migration
             $table->date('tanggal_lahir_ibu')->nullable();
             $table->string('pendidikan_terakhir_ibu')->nullable();
             $table->string('alamat_lengkap_ibu')->nullable();
+            $table->string('pekerjaan_ibu')->nullable();
             $table->string('no_hp_ibu')->nullable();
 
             // Data Ketiga
@@ -61,6 +63,7 @@ return new class extends Migration
             $table->string('file_bpjs')->nullable();
 
             $table->string('status')->default('pending'); // pending, accepted, rejected
+            $table->string('status_pembayaran')->default('belum_lunas');
             $table->string('keterangan')->nullable();
         });
     }

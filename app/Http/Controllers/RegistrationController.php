@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class RegistrationController extends Controller
@@ -181,6 +182,7 @@ class RegistrationController extends Controller
             'pendidikan_terakhir_ayah' => 'required|string',
             'alamat_lengkap_ayah' => 'required|string',
             'no_hp_ayah' => 'required|string',
+            'pekerjaan_ayah' => 'required|string',
             'kode_pos' => 'nullable|string',
 
             // Data Ibu
@@ -190,6 +192,7 @@ class RegistrationController extends Controller
             'tempat_lahir_ibu' => 'required|string',
             'tanggal_lahir_ibu' => 'required|date',
             'pendidikan_terakhir_ibu' => 'required|string',
+            'pekerjaan_ibu' => 'required|string',
             'alamat_lengkap_ibu' => 'required|string',
             'no_hp_ibu' => 'required|string',
 
@@ -412,6 +415,58 @@ class RegistrationController extends Controller
         $user->update($validated);
 
         return back()->with('success', 'Berhasil mengubah password');
+    }
+
+    public function updateStatusPembayaran(Request $request, $id) {
+
+        $validated = $request->validate([
+            'status_pembayaran' => 'required'
+        ]);
+
+        $registration = Registration::findOrFail($id);
+
+        $registration->update($validated);
+
+        return back()->with('success', 'Berhasil mengupdate status pembayaran');
+
+    }
+
+    public function dokPendaftaran($id) {
+        $data = Registration::findOrFail($id);
+
+    $pdf = Pdf::loadView('admin.pendaftar.dok_pendaftaran', [
+        'data' => $data,
+    ])->setPaper('A4', 'portrait');
+
+    return $pdf->stream('formulir-pendaftaran.pdf');   
+    }
+
+    public function dokPernyataan($id) {
+        $data = Registration::findOrFail($id);
+
+        $pdf = Pdf::loadView('admin.pendaftar.dok_pernyataan', [
+            'data' => $data
+        ])
+        ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('formulir-pernyataan-dummy.pdf');
+
+    }
+
+    public function dokJanjiSantri($id) {
+        $data = Registration::findOrFail($id);
+
+        return Pdf::loadView(
+            'admin.pendaftar.dok_janji_santri',
+            compact('data')
+        )->stream('surat-pernyataan-dan-janji-santri.pdf');
+    }
+
+    public function dokSyaratPendaftaran() {
+        return Pdf::loadView(
+            'admin.pendaftar.dok_syarat_pendaftaran'
+        )->setPaper('A4', 'portrait')
+            ->stream('syarat-pendaftaran.pdf');
     }
 
 }
