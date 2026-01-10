@@ -1,260 +1,7 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    @push('styles')
-        <style>
-            .container-profile {
-                font-family: Arial, sans-serif;
-                max-width: 1000px;
-                margin: 20px auto;
-                color: #333;
-                line-height: 1.6;
-            }
 
-            .card {
-                background: #fff;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                padding: 20px;
-                margin-bottom: 20px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            }
-
-            .header-card {
-                background: #f8f9fa;
-                border-left: 5px solid #3498db;
-            }
-
-            .header-top {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 10px;
-                margin-bottom: 15px;
-            }
-
-            .header-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
-            }
-
-            .info-item label {
-                display: block;
-                font-size: 11px;
-                text-transform: uppercase;
-                color: #777;
-                font-weight: bold;
-            }
-
-            .main-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
-
-            .section-title {
-                border-bottom: 2px solid #3498db;
-                padding-bottom: 5px;
-                margin-bottom: 15px;
-                font-size: 18px;
-            }
-
-            .detail-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            .detail-table td {
-                padding: 8px 0;
-                border-bottom: 1px solid #f5f5f5;
-            }
-
-            .parent-box {
-                padding: 15px;
-                border-radius: 6px;
-                margin-bottom: 10px;
-            }
-
-            .ayah {
-                background: #e3f2fd;
-                border: 1px solid #bbdefb;
-            }
-
-            .ibu {
-                background: #fce4ec;
-                border: 1px solid #f8bbd0;
-            }
-
-            .parent-box h4 {
-                margin: 0 0 5px 0;
-                font-size: 14px;
-            }
-
-            .badge {
-                padding: 4px 10px;
-                border-radius: 20px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-
-            .locked {
-                background: #ffebee;
-                color: #c62828;
-            }
-
-            .unlocked {
-                background: #e8f5e9;
-                color: #2e7d32;
-            }
-
-            .file-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 10px;
-            }
-
-            .file-link {
-                display: block;
-                padding: 10px;
-                text-align: center;
-                background: #f1f1f1;
-                text-decoration: none;
-                color: #333;
-                border-radius: 4px;
-                font-size: 12px;
-            }
-
-            .file-link:hover {
-                background: #e0e0e0;
-            }
-
-            /* Responsif untuk HP */
-            @media (max-width: 768px) {
-                .main-grid {
-                    grid-template-columns: 1fr;
-                }
-            }
-
-            /* Modal */
-            /* Tombol Status */
-            .btn-status {
-                background-color: #f39c12;
-                color: white;
-                border: none;
-                padding: 8px 15px;
-                border-radius: 5px;
-                cursor: pointer;
-                margin-right: 10px;
-                font-weight: bold;
-            }
-
-            /* Overlay Modal */
-            .modal-overlay {
-                display: none;
-                /* Tersembunyi di awal */
-                position: fixed;
-                z-index: 9999;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(2px);
-            }
-
-            /* Konten Modal */
-            .modal-content {
-                background-color: #fff;
-                margin: 10% auto;
-                width: 90%;
-                max-width: 500px;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-                overflow: hidden;
-            }
-
-            .modal-header,
-            .modal-footer {
-                padding: 15px 20px;
-                background: #f8f9fa;
-            }
-
-            .modal-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-bottom: 1px solid #eee;
-            }
-
-            .modal-body {
-                padding: 20px;
-            }
-
-            /* Styling Input */
-            .radio-group {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                margin-bottom: 20px;
-            }
-
-            .radio-item {
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-
-            .radio-item:hover {
-                background: #f0f7ff;
-            }
-
-            .form-group label {
-                display: block;
-                margin-bottom: 8px;
-                font-weight: bold;
-            }
-
-            textarea {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                box-sizing: border-box;
-                /* Penting agar tidak overflow */
-                font-family: inherit;
-            }
-
-            /* Tombol Modal */
-            .btn-save {
-                background: #2ecc71;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-
-            .btn-close {
-                background: #95a5a6;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-                margin-right: 5px;
-            }
-
-            .close-modal {
-                cursor: pointer;
-                font-size: 20px;
-                font-weight: bold;
-                color: #777;
-            }
-        </style>
-    @endpush
 
     {{-- Modal --}}
     <div id="modalStatus" class="modal-overlay">
@@ -424,9 +171,9 @@
                             <div class="detail-label">Status Data</div>
                             <div class="detail-value">
                                 @if ($data->is_locked)
-                                    <span style="color: var(--danger);"><i class="fa-solid fa-lock"></i> Terkunci</span>
+                                    <span class="text-danger"><i class="fa-solid fa-lock"></i> Terkunci</span>
                                 @else
-                                    <span style="color: var(--success);"><i class="fa-solid fa-lock-open"></i>
+                                    <span class="text-success"><i class="fa-solid fa-lock-open"></i>
                                         Terbuka</span>
                                 @endif
                             </div>
@@ -465,7 +212,7 @@
                             <div class="detail-value">{{ $data->anak_ke }} dari {{ $data->jumlah_saudara }} bersaudara
                             </div>
                         </div>
-                        <div class="detail-item" style="grid-column: 1 / -1;">
+                        <div class="detail-item col-span-full">
                             <div class="detail-label">Alamat Lengkap</div>
                             <div class="detail-value">{{ $data->alamat }}</div>
                         </div>
@@ -477,7 +224,7 @@
                     <div class="card-header">
                         <h3 class="card-title"><i class="fa-solid fa-users"></i> Data Orang Tua</h3>
                     </div>
-                    <div style="display: grid; gap: 20px;">
+                    <div class="grid-gap-20">
                         {{-- Ayah --}}
                         <div class="parent-section">
                             <div class="parent-header"><i class="fa-solid fa-mars"></i> Data Ayah</div>
@@ -524,7 +271,7 @@
                             </div>
                         </div>
                     </div>
-                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--text-light); text-align: center;">
+                    <div class="mt-3 text-sm text-muted text-center">
                         <i class="fa-solid fa-info-circle"></i> No. KK: <strong>{{ $data->no_kk }}</strong> | Kode Pos:
                         <strong>{{ $data->kode_pos }}</strong>
                     </div>
@@ -533,7 +280,7 @@
 
             {{-- Right Column: Files --}}
             <div class="right-col">
-                <div class="card" style="position: sticky; top: 20px;">
+                <div class="card sticky-top-20">
                     <div class="card-header">
                         <h3 class="card-title"><i class="fa-solid fa-folder-open"></i> Dokumen</h3>
                     </div>
@@ -559,13 +306,13 @@
                                 <a href="{{ asset('Berkas/' . $file) }}" target="_blank" class="file-card">
                                     <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
                                     <div class="file-name">{{ $label }}</div>
-                                    <span style="font-size: 0.7rem; color: var(--success);">Tersedia</span>
+                                    <span class="text-xs text-success">Tersedia</span>
                                 </a>
                             @else
                                 <div class="file-card file-missing">
                                     <div class="file-icon"><i class="fa-solid fa-file-circle-xmark"></i></div>
                                     <div class="file-name">{{ $label }}</div>
-                                    <span style="font-size: 0.7rem;">Tidak Ada</span>
+                                    <span class="text-xs">Tidak Ada</span>
                                 </div>
                             @endif
                         @endforeach

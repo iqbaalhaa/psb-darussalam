@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Registration;
 use App\Models\User;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -17,7 +18,8 @@ class RegistrationController extends Controller
     public function index()
     {
         $pendaftar = Registration::with('user')->latest()->get();
-        return view('admin.pendaftar.index', compact('pendaftar'));
+        $tahunAjarans = TahunAjaran::latest()->get();
+        return view('admin.pendaftar.index', compact('pendaftar', 'tahunAjarans'));
     }
 
     public function store(Request $request)
@@ -470,4 +472,79 @@ class RegistrationController extends Controller
             ->stream('syarat-pendaftaran.pdf');
     }
 
+    public function export(Request $request)
+    {
+        $request->validate([
+            'jenis_dokumen' => 'required',
+        ]);
+
+        $query = Registration::query();
+
+        if ($request->filled('jenjang')) {
+            $query->where('jenjang', $request->jenjang);
+        }
+        if ($request->filled('tahun_ajaran')) {
+            $query->where('tahun_ajaran', $request->tahun_ajaran);
+        }
+
+        $registrations = $query->get();
+
+        if ($registrations->isEmpty()) {
+            return back()->with('error', 'Tidak ada data untuk diexport.');
+        }
+
+        $jenis = $request->jenis_dokumen;
+
+        // Jika user memilih laporan list (Excel/PDF List)
+        if ($jenis === 'laporan_list') {
+             // Redirect ke controller laporan untuk print
+             return redirect()->route('admin.laporan.print', $request->all());
+        }
+
+        // Untuk export dokumen massal (ZIP)
+        $zipFileName = 'export-' . $jenis . '-' . date('Y-m-d_H-i-s') . '.zip';
+        $zipPath = storage_path('app/public/' . $zipFileName);
+        
+        // Pastikan folder exists
+        if (!File::exists(storage_path('app/public'))) {
+            File::makeDirectory(storage_path('app/public'), 0755, true);
+        }
+
+        $zip = new \ZipArchive;
+
+        if ($zip->open($zipPath, \ZipArchive::CREATE) === TRUE) {
+            foreach ($registrations as $reg) {
+                $pdf = null;
+                $filename = '';
+                $safeName = preg_replace('/[^A-Za-z0-9\-]/', '_', $reg->nama);
+
+                try {
+                    if ($jenis === 'formulir_pendaftaran') {
+                        $pdf = Pdf::loadView('admin.pendaftar.dok_pendaftaran', ['data' => $reg])->setPaper('A4', 'portrait');
+                        $filename = 'Formulir_' . $safeName . '_' . $reg->id . '.pdf';
+                    } elseif ($jenis === 'dokumen_pernyataan') {
+                         $pdf = Pdf::loadView('admin.pendaftar.dok_pernyataan', ['data' => $reg])->setPaper('A4', 'portrait');
+                         $filename = 'Pernyataan_' . $safeName . '_' . $reg->id . '.pdf';
+                    } elseif ($jenis === 'janji_santri') {
+                         $pdf = Pdf::loadView('admin.pendaftar.dok_janji_santri', ['data' => $reg]);
+                         $filename = 'Janji_' . $safeName . '_' . $reg->id . '.pdf';
+                    }
+
+                    if ($pdf) {
+                        $zip->addFromString($filename, $pdf->output());
+                    }
+                } catch (\Exception $e) {
+                    // Skip failed PDFs or log error
+                    continue;
+                }
+            }
+            $zip->close();
+        }
+
+        if (File::exists($zipPath)) {
+            return response()->download($zipPath)->deleteFileAfterSend(true);
+        } else {
+             return back()->with('error', 'Gagal membuat file export.');
+        }
+    }
 }

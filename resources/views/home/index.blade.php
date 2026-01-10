@@ -111,20 +111,6 @@
             </div>
         </section>
 
-        <!-- Trust strip -->
-        <section class="trust">
-            <div class="container">
-                <div class="trust__grid">
-                    <div class="trust__item"><span class="trust__icon">✅</span> Pembinaan adab & ibadah harian</div>
-                    <div class="trust__item"><span class="trust__icon">📖</span> Program tahfidz bertahap</div>
-                    <div class="trust__item"><span class="trust__icon">🏡</span> Asrama tertib & terawasi</div>
-                    <div class="trust__item"><span class="trust__icon">👨‍🏫</span> Pendampingan ustadz/ustadzah</div>
-                    <div class="trust__item"><span class="trust__icon">📞</span> Komunikasi wali santri</div>
-                    <div class="trust__item"><span class="trust__icon">📍</span> Kota Jambi</div>
-                </div>
-            </div>
-        </section>
-
         <!-- Why -->
         <section class="section">
             <div class="container">

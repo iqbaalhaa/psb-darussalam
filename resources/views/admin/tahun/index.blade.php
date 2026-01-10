@@ -2,6 +2,10 @@
 
 @section('title', 'Tahun Ajaran')
 
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+@endpush
+
 @section('content')
 <div class="page-header">
   <div class="page-title">
@@ -9,7 +13,7 @@
     <p>Kelola tahun ajaran penerimaan santri baru.</p>
   </div>
   <div class="actions">
-    <button class="btn-save" onclick="document.getElementById('addYearModal').style.display='flex'">
+    <button class="btn-save" onclick="document.getElementById('addYearModal').classList.add('show')">
       <i class="fa-solid fa-plus"></i>
       Tambah Tahun Ajaran
     </button>
@@ -24,52 +28,56 @@
 
 <div class="table-card">
   <div class="table-responsive">
-    <table class="table">
+    <table class="table" id="table-tahun">
       <thead>
         <tr>
-          <th>Tahun Ajaran</th>
-          <th>Status</th>
-          <th style="text-align: right;">Aksi</th>
+          <th class="w-5">No</th>
+          <th class="w-50">Tahun Ajaran</th>
+          <th class="w-20">Status</th>
+          <th class="w-25 text-right">Aksi</th>
         </tr>
       </thead>
       <tbody>
         @forelse($tahunAjarans as $tahun)
         <tr>
-          <td><strong>{{ $tahun->nama }}</strong></td>
+          <td>{{ $loop->iteration }}</td>
+          <td><span class="fw-600 text-main">{{ $tahun->nama }}</span></td>
           <td>
             @if($tahun->is_active)
-              <span class="status-badge active">Aktif</span>
+              <span class="status-badge active"><i class="fa-solid fa-check-circle"></i> Aktif</span>
             @else
-              <span class="status-badge inactive">Non-aktif</span>
+              <span class="status-badge inactive"><i class="fa-solid fa-ban"></i> Non-aktif</span>
             @endif
           </td>
-          <td style="text-align: right;">
-            <form action="{{ route('admin.tahun.updateStatus', $tahun->id) }}" method="POST" style="display:inline-block;">
-              @csrf
-              @method('PATCH')
-              @if($tahun->is_active)
-                <button type="submit" class="icon-btn" title="Nonaktifkan" style="color: #10b981;">
-                  <i class="fa-solid fa-toggle-on fa-lg"></i>
-                </button>
-              @else
-                <button type="submit" class="icon-btn" title="Aktifkan" style="color: #cbd5e1;">
-                  <i class="fa-solid fa-toggle-off fa-lg"></i>
-                </button>
-              @endif
-            </form>
-            
-            <form action="{{ route('admin.tahun.destroy', $tahun->id) }}" method="POST" style="display:inline-block; margin-left: 8px;" onsubmit="return confirm('Hapus tahun ajaran ini?')">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="icon-btn danger" title="Hapus">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </form>
+          <td class="text-right">
+            <div class="action-btn-group">
+                <form action="{{ route('admin.tahun.updateStatus', $tahun->id) }}" method="POST" class="d-inline-block">
+                  @csrf
+                  @method('PATCH')
+                  @if($tahun->is_active)
+                    <button type="submit" class="action-btn" title="Nonaktifkan" style="color: var(--danger); border-color: var(--danger);">
+                      <i class="fa-solid fa-toggle-on"></i>
+                    </button>
+                  @else
+                    <button type="submit" class="action-btn" title="Aktifkan" style="color: var(--success); border-color: var(--success);">
+                      <i class="fa-solid fa-toggle-off"></i>
+                    </button>
+                  @endif
+                </form>
+                
+                <form action="{{ route('admin.tahun.destroy', $tahun->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Hapus tahun ajaran ini?')">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="action-btn" title="Hapus" style="color: var(--danger); border-color: var(--danger);">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </form>
+            </div>
           </td>
         </tr>
         @empty
         <tr>
-          <td colspan="3" style="text-align: center; padding: 30px; color: var(--text-light);">Belum ada data tahun ajaran.</td>
+          <td colspan="4" class="empty-state">Belum ada data tahun ajaran.</td>
         </tr>
         @endforelse
       </tbody>
@@ -81,8 +89,8 @@
 <div id="addYearModal" class="modal-backdrop">
   <div class="modal-content">
     <div class="modal-header">
-      <strong class="modal-title">Tambah Tahun Ajaran</strong>
-      <button type="button" class="close-modal" onclick="document.getElementById('addYearModal').style.display='none'">
+      <h3 class="modal-title">Tambah Tahun Ajaran</h3>
+      <button type="button" class="close-modal" onclick="document.getElementById('addYearModal').classList.remove('show')">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
@@ -91,21 +99,46 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="nama" class="form-label">Nama Tahun Ajaran</label>
-          <input type="text" name="nama" id="nama" class="form-input" placeholder="Contoh: 2025/2026" required>
+          <input type="text" name="nama" id="nama" class="form-control" placeholder="Contoh: 2025/2026" required>
         </div>
         <div class="form-group">
-          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-            <input type="checkbox" name="is_active" value="1" style="width: 16px; height: 16px; cursor: pointer;">
-            <span style="font-size: 14px; font-weight: 500;">Set sebagai Aktif</span>
+          <label class="checkbox-wrapper">
+            <input type="checkbox" name="is_active" value="1" class="checkbox-input">
+            <span class="checkbox-label">Set sebagai Aktif</span>
           </label>
-          <p style="font-size: 12px; color: var(--text-light); margin-top: 6px; margin-left: 26px;">Jika diaktifkan, tahun ajaran lain akan otomatis menjadi non-aktif.</p>
+          <p class="checkbox-help">Jika diaktifkan, tahun ajaran lain akan otomatis menjadi non-aktif.</p>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-cancel" onclick="document.getElementById('addYearModal').style.display='none'">Batal</button>
+        <button type="button" class="btn-cancel" onclick="document.getElementById('addYearModal').classList.remove('show')">Batal</button>
         <button type="submit" class="btn-save">Simpan</button>
       </div>
     </form>
   </div>
 </div>
+
+@push('scripts')
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#table-tahun').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json",
+                    "paginate": {
+                        "previous": "<i class='fa-solid fa-chevron-left'></i>",
+                        "next": "<i class='fa-solid fa-chevron-right'></i>"
+                    }
+                },
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [3] // Kolom Aksi
+                }],
+                "dom": 'rtip',
+                "pageLength": 10
+            });
+        });
+    </script>
+@endpush
 @endsection

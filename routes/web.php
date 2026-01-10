@@ -23,7 +23,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 Route::get('/', function () {
     $tahunAktif = \App\Models\TahunAjaran::where('is_active', 1)->first();
-    return view('home.index');
+    return view('home.index', compact('tahunAktif'));
 })->name('home');
 
 // Auth Routes
@@ -71,6 +71,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/detail-pendaftar/{id}', [RegistrationController::class, 'detail']);
     Route::post('/admin/update-status-pendaftaran/{id}', [RegistrationController::class, 'updateStatus']);
+    Route::post('/admin/export-pendaftar', [RegistrationController::class, 'export'])->name('admin.export.process');
 
     Route::get('/admin/edit-pendaftar/{id}', [RegistrationController::class, 'edit']);
     Route::put('/admin/update-pendaftar/{id}', [RegistrationController::class, 'updateDataRegister']);
@@ -103,13 +104,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     //     return 'Halaman Pengumuman (Coming Soon)';
     // })->name('admin.pengumuman.index');
 
-    Route::get('/admin/laporan', function () {
-        return 'Halaman Laporan (Coming Soon)';
-    })->name('admin.laporan.index');
+    Route::get('/admin/laporan', [\App\Http\Controllers\LaporanController::class, 'index'])->name('admin.laporan.index');
+    Route::get('/admin/laporan/print', [\App\Http\Controllers\LaporanController::class, 'print'])->name('admin.laporan.print');
 
-    Route::get('/admin/akun', function () {
-        return 'Halaman Akun (Coming Soon)';
-    })->name('admin.akun.index');
+    // Route Akun Management
+    Route::get('/admin/akun', [\App\Http\Controllers\AccountController::class, 'index'])->name('admin.akun.index');
+    Route::post('/admin/akun', [\App\Http\Controllers\AccountController::class, 'store'])->name('admin.akun.store');
+    Route::put('/admin/akun/{id}', [\App\Http\Controllers\AccountController::class, 'update'])->name('admin.akun.update');
+    Route::delete('/admin/akun/{id}', [\App\Http\Controllers\AccountController::class, 'destroy'])->name('admin.akun.destroy');
 });
 
 // Test Pdf :

@@ -27,6 +27,7 @@
                 <option value="MA" {{ request('jenjang') == 'MA' ? 'selected' : '' }}>MA</option> --}}
                 <option value="MTS" {{ request('jenjang') == 'MTS' ? 'selected' : '' }}>MTS</option>
                 <option value="MA" {{ request('jenjang') == 'MA' ? 'selected' : '' }}>MA</option>
+                <option value="MI" {{ request('jenjang') == 'MI' ? 'selected' : '' }}>MI</option>
             </select>
             <select id="filter-status" class="form-select">
                 <option value="">Semua Status</option>
@@ -37,6 +38,9 @@
                 <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
                 <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
             </select>
+            <button class="btn-save" id="btn-export-modal" style="height: 42px; padding: 0 20px;">
+                <i class="fa-solid fa-file-export"></i> Export
+            </button>
         </div>
     </div>
 
@@ -46,13 +50,13 @@
             <table class="table" id="table-pendaftar">
                 <thead>
                     <tr>
-                        <th width="5%">No</th>
-                        <th width="25%">Nama Lengkap</th>
-                        <th width="15%">Tahun Ajaran</th>
-                        <th width="15%">Jenjang</th>
-                        <th width="20%">Kontak</th>
-                        <th width="15%">Status</th>
-                        <th width="20%" style="text-align: right;">Aksi</th>
+                        <th class="w-5">No</th>
+                        <th class="w-25">Nama Lengkap</th>
+                        <th class="w-15">Tahun Ajaran</th>
+                        <th class="w-15">Jenjang</th>
+                        <th class="w-20">Kontak</th>
+                        <th class="w-15">Status</th>
+                        <th class="w-20 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,45 +64,43 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="font-weight: 600; color: var(--text-main);">{{ $item->nama }}</span>
-                                    <span
-                                        style="font-size: 0.8rem; color: var(--text-light);">{{ $item->user->email ?? '-' }}</span>
+                                <div class="flex-column">
+                                    <span class="fw-600 text-main">{{ $item->nama }}</span>
+                                    <span class="text-sm text-muted">{{ $item->user->email ?? '-' }}</span>
                                 </div>
                             </td>
                             <td>
-                                <span style="font-weight: 500; color: var(--text-light);">{{ $item->tahun_ajaran }}</span>
+                                <span class="fw-500 text-muted">{{ $item->tahun_ajaran }}</span>
                             </td>
                             <td>
-                                <span style="font-weight: 500; color: var(--text-light);">{{ $item->jenjang }}</span>
+                                <span class="fw-500 text-muted">{{ $item->jenjang }}</span>
                             </td>
                             <td>
-                                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-light);">
-                                    <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+                                <div class="d-flex align-center gap-2 text-muted">
+                                    <i class="fa-brands fa-whatsapp text-whatsapp"></i>
                                     {{ $item->wa }}
                                 </div>
                             </td>
                             <td>
                                 <span class="status-badge {{ $item->status }}">
                                     @if ($item->status == 'pending')
-                                        <i class="fa-solid fa-clock" style="margin-right: 4px;"></i>
+                                        <i class="fa-solid fa-clock mr-1"></i>
                                     @elseif($item->status == 'diterima')
-                                        <i class="fa-solid fa-check-circle" style="margin-right: 4px;"></i>
+                                        <i class="fa-solid fa-check-circle mr-1"></i>
                                     @else
-                                        <i class="fa-solid fa-times-circle" style="margin-right: 4px;"></i>
+                                        <i class="fa-solid fa-times-circle mr-1"></i>
                                     @endif
                                     {{ ucfirst($item->status) }}
                                 </span>
                             </td>
                             <td>
-                                <div class="action-btn-group" style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <div class="action-btn-group">
                                     <button class="action-btn view btn-detail"
                                         data-url="{{ route('admin.pendaftar.show', $item->id) }}" title="Lihat Detail">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
 
-                                    <a href="{{ url('admin/detail-pendaftar/' . $item->id) }}" class="action-btn"
-                                        style="background: #f3e8ff; color: #9333ea; border-color: #e9d5ff;"
+                                    <a href="{{ url('admin/detail-pendaftar/' . $item->id) }}" class="action-btn btn-purple-light"
                                         title="Cek Lengkap">
                                         <i class="fa-solid fa-file-lines"></i>
                                     </a>
@@ -129,6 +131,44 @@
                 {{-- Content injected via JS --}}
             </div>
         </div>
+    </div>
+
+    <!-- Hidden Template for Export Modal -->
+    <div id="export-form-template" style="display: none;">
+        <form action="{{ route('admin.export.process') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">Jenis Dokumen</label>
+                <select name="jenis_dokumen" class="form-select" required>
+                    <option value="laporan_list">Data Pendaftar (Excel/PDF List)</option>
+                    <option value="formulir_pendaftaran">Formulir Pendaftaran (PDF - ZIP)</option>
+                    <option value="dokumen_pernyataan">Surat Pernyataan (PDF - ZIP)</option>
+                    <option value="janji_santri">Janji Santri (PDF - ZIP)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Jenjang</label>
+                <select name="jenjang" class="form-select">
+                    <option value="">Semua Jenjang</option>
+                    <option value="MTS">MTS</option>
+                    <option value="MA">MA</option>
+                    <option value="MI">MI</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tahun Ajaran</label>
+                 <select name="tahun_ajaran" class="form-select">
+                    <option value="">Semua Tahun</option>
+                    @foreach($tahunAjarans as $tahun)
+                         <option value="{{ $tahun->nama }}">{{ $tahun->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="modal-footer" style="padding: 0; border: none; margin-top: 20px;">
+                <button type="button" class="btn-cancel" data-close-modal>Batal</button>
+                <button type="submit" class="btn-save"><i class="fa-solid fa-download"></i> Download</button>
+            </div>
+        </form>
     </div>
 
     @push('scripts')
@@ -174,6 +214,17 @@
                     }
                 });
 
+                // --- Export Modal ---
+                $('#btn-export-modal').on('click', function() {
+                    var content = $('#export-form-template').html();
+                    openModal("Export Data Pendaftar", content);
+                    
+                    // Re-attach close handlers
+                    document.querySelectorAll("[data-close-modal]").forEach(btn => {
+                        btn.addEventListener("click", closeModal);
+                    });
+                });
+
                 // --- Modal Logic ---
                 const modalBackdrop = document.querySelector(".modal-backdrop");
                 const modalTitle = document.querySelector("[data-modal-title]");
@@ -182,11 +233,11 @@
                 function openModal(title, content) {
                     if (modalTitle) modalTitle.textContent = title;
                     if (modalBody) modalBody.innerHTML = content;
-                    if (modalBackdrop) modalBackdrop.style.display = "flex";
+                    if (modalBackdrop) modalBackdrop.classList.add("show");
                 }
 
                 function closeModal() {
-                    if (modalBackdrop) modalBackdrop.style.display = "none";
+                    if (modalBackdrop) modalBackdrop.classList.remove("show");
                 }
 
                 document.querySelectorAll("[data-close-modal]").forEach(btn => {
