@@ -228,6 +228,7 @@ class RegistrationController extends Controller
             '_token',
             '_method',
         ]);
+        
         if ($request->hasFile('file_biodata')) {
 
             $fileBio = $request->file('file_biodata');

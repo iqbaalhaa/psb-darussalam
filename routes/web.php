@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PengumumanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistrationController;
@@ -21,6 +22,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 */
 
 Route::get('/', function () {
+    $tahunAktif = \App\Models\TahunAjaran::where('is_active', 1)->first();
     return view('home.index');
 })->name('home');
 
@@ -80,11 +82,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/form-janji-santri-pdf/{id}', [RegistrationController::class, 'dokJanjiSantri']);
     Route::get('/form-syarat-pendaftaran', [RegistrationController::class, 'dokSyaratPendaftaran']);
 
+    // Pengumuman : 
+    Route::get("/admin/pengumuman", [PengumumanController::class, 'index'])->name('admin.pengumuman.index');
+    Route::get("/admin/pengumuman/create", [PengumumanController::class, 'create'])->name('admin.pengumuman.create');
+    Route::post("/admin/pengumuman", [PengumumanController::class, 'store']);
+    Route::get("/admin/pengumuman/{pengumuman}", [PengumumanController::class, 'edit']);
+    Route::patch("/admin/pengumuman/{pengumuman}", [PengumumanController::class, 'update']);
+    Route::delete("/admin/pengumuman/{pengumuman}", [PengumumanController::class, 'destroy']);
+    // Route::get("/admin/pengumuman", [PengumumanController::class, 'index']);
+    // Route::get("/admin/pengumuman", [PengumumanController::class, 'index']);
+    // Route::get("/admin/pengumuman", [PengumumanController::class, 'index']);
 
 
-    Route::get('/admin/pengumuman', function () {
-        return 'Halaman Pengumuman (Coming Soon)';
-    })->name('admin.pengumuman.index');
+    Route::get('/admin/tahun', [\App\Http\Controllers\TahunAjaranController::class, 'index'])->name('admin.tahun.index');
+    Route::post('/admin/tahun', [\App\Http\Controllers\TahunAjaranController::class, 'store'])->name('admin.tahun.store');
+    Route::patch('/admin/tahun/{id}/status', [\App\Http\Controllers\TahunAjaranController::class, 'updateStatus'])->name('admin.tahun.updateStatus');
+    Route::delete('/admin/tahun/{id}', [\App\Http\Controllers\TahunAjaranController::class, 'destroy'])->name('admin.tahun.destroy');
+
+    // Route::get('/admin/pengumuman', function () {
+    //     return 'Halaman Pengumuman (Coming Soon)';
+    // })->name('admin.pengumuman.index');
 
     Route::get('/admin/laporan', function () {
         return 'Halaman Laporan (Coming Soon)';

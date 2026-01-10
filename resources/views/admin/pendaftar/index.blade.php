@@ -4,134 +4,130 @@
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    <style>
-        /* DataTables Dark Theme Support */
-        table.dataTable tbody tr {
-            background-color: transparent !important;
-            color: var(--text);
-        }
-
-        table.dataTable tbody tr.odd {
-            background-color: rgba(255, 255, 255, 0.02) !important;
-        }
-
-        table.dataTable tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-        }
-
-        /* Text Colors for DataTables Controls */
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_filter,
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_processing,
-        .dataTables_wrapper .dataTables_paginate {
-            color: var(--text) !important;
-        }
-
-        /* Pagination Buttons */
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            color: var(--text) !important;
-            border: 1px solid var(--border) !important;
-            background: transparent !important;
-            border-radius: 4px;
-            margin-left: 5px;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            background: var(--primary) !important;
-            color: #fff !important;
-            border: 1px solid var(--primary) !important;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: var(--text) !important;
-            border: 1px solid var(--border) !important;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
-            color: var(--muted) !important;
-            background: transparent !important;
-            border: 1px solid transparent !important;
-        }
-    </style>
 @endpush
 
 @section('content')
-    <div class="page-title">
-        <div>
+    <div class="page-header">
+        <div class="page-title">
             <h1>Data Pendaftar</h1>
-            <p>Kelola data santri baru di sini.</p>
-        </div>
-        <div class="actions">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="text" id="filter-q" name="q" placeholder="Cari Nama/Email..." value="{{ request('q') }}"
-                    class="form-control"
-                    style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; min-width: 200px;">
-
-                <select name="jenjang" id="filter-jenjang" class="form-control"
-                    style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px;">
-                    <option value="">Semua Jenjang</option>
-                    <option value="MTS" {{ request('jenjang') == 'MTS' ? 'selected' : '' }}>MTS</option>
-                    <option value="MA" {{ request('jenjang') == 'MA' ? 'selected' : '' }}>MA</option>
-                </select>
-
-                <select name="status" id="filter-status" class="form-control"
-                    style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px;">
-                    <option value="">Semua Status</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
-                    <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                </select>
-            </div>
+            <p>Kelola data penerimaan santri baru dengan mudah.</p>
         </div>
     </div>
 
-    <div class="card">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="filter-q" placeholder="Cari berdasarkan nama atau email..." value="{{ request('q') }}">
+        </div>
+        <div class="filter-group">
+            <select id="filter-jenjang" class="form-select">
+                <option value="">Semua Jenjang</option>
+                {{-- <option value="MTS" {{ request('jenjang') == 'MTS' ? 'selected' : '' }}>MTS</option>
+                <option value="MA" {{ request('jenjang') == 'MA' ? 'selected' : '' }}>MA</option> --}}
+                <option value="MTS" {{ request('jenjang') == 'MTS' ? 'selected' : '' }}>MTS</option>
+                <option value="MA" {{ request('jenjang') == 'MA' ? 'selected' : '' }}>MA</option>
+            </select>
+            <select id="filter-status" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="incomplete_file" {{ request('status') == 'incomplete_file' ? 'selected' : '' }}>Berkas Belum
+                    Lengkap
+                </option>
+                <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
+                <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-card">
         <div class="table-responsive">
             <table class="table" id="table-pendaftar">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Jenjang</th>
-                        <th>Email</th>
-                        <th>WhatsApp</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th width="5%">No</th>
+                        <th width="25%">Nama Lengkap</th>
+                        <th width="15%">Tahun Ajaran</th>
+                        <th width="15%">Jenjang</th>
+                        <th width="20%">Kontak</th>
+                        <th width="15%">Status</th>
+                        <th width="20%" style="text-align: right;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($pendaftar as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->nama }}</td>
-                            <td>{{ $item->jenjang }}</td>
-                            <td>{{ $item->user->email }}</td>
-                            <td>{{ $item->wa }}</td>
                             <td>
-                                <span
-                                    class="badge {{ $item->status == 'pending' ? 'warning' : ($item->status == 'diterima' ? 'success' : 'danger') }}">
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-weight: 600; color: var(--text-main);">{{ $item->nama }}</span>
+                                    <span
+                                        style="font-size: 0.8rem; color: var(--text-light);">{{ $item->user->email ?? '-' }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span style="font-weight: 500; color: var(--text-light);">{{ $item->tahun_ajaran }}</span>
+                            </td>
+                            <td>
+                                <span style="font-weight: 500; color: var(--text-light);">{{ $item->jenjang }}</span>
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-light);">
+                                    <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+                                    {{ $item->wa }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ $item->status }}">
+                                    @if ($item->status == 'pending')
+                                        <i class="fa-solid fa-clock" style="margin-right: 4px;"></i>
+                                    @elseif($item->status == 'diterima')
+                                        <i class="fa-solid fa-check-circle" style="margin-right: 4px;"></i>
+                                    @else
+                                        <i class="fa-solid fa-times-circle" style="margin-right: 4px;"></i>
+                                    @endif
                                     {{ ucfirst($item->status) }}
                                 </span>
                             </td>
                             <td>
-                                <button class="btn sm btn-detail"
-                                    data-url="{{ route('admin.pendaftar.show', $item->id) }}">Detail</button>
+                                <div class="action-btn-group" style="display: flex; gap: 8px; justify-content: flex-end;">
+                                    <button class="action-btn view btn-detail"
+                                        data-url="{{ route('admin.pendaftar.show', $item->id) }}" title="Lihat Detail">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
 
-                                <a href="{{ url('admin/detail-pendaftar/' . $item->id) }}" class="btn btn-info">Cek</a>
+                                    <a href="{{ url('admin/detail-pendaftar/' . $item->id) }}" class="action-btn"
+                                        style="background: #f3e8ff; color: #9333ea; border-color: #e9d5ff;"
+                                        title="Cek Lengkap">
+                                        <i class="fa-solid fa-file-lines"></i>
+                                    </a>
 
-                                <a href="{{ url('admin/edit-pendaftar/' . $item->id) }}" class="btn"
-                                    style="background: yellow;">Edit</a>
-
+                                    <a href="{{ url('admin/edit-pendaftar/' . $item->id) }}" class="action-btn edit"
+                                        title="Edit Data">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    {{-- Generic Modal Container for AJAX Content --}}
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <strong class="modal-title" data-modal-title>Detail Pendaftar</strong>
+                <button type="button" class="close-modal" data-close-modal>
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" data-modal-body>
+                {{-- Content injected via JS --}}
+            </div>
         </div>
     </div>
 
@@ -142,14 +138,19 @@
             $(document).ready(function() {
                 var table = $('#table-pendaftar').DataTable({
                     "language": {
-                        "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json"
+                        "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json",
+                        "paginate": {
+                            "previous": "<i class='fa-solid fa-chevron-left'></i>",
+                            "next": "<i class='fa-solid fa-chevron-right'></i>"
+                        }
                     },
                     "columnDefs": [{
                         "searchable": false,
                         "orderable": false,
-                        "targets": [0, 6]
+                        "targets": [0, 5]
                     }],
-                    "dom": 'rtip' // Hilangkan search default (f) dan length (l) karena kita pakai custom
+                    "dom": 'rtip',
+                    "pageLength": 10
                 });
 
                 // Custom Search
@@ -157,34 +158,23 @@
                     table.search(this.value).draw();
                 });
 
-                // Custom Filter Jenjang (Column 2)
+                // Custom Filter Jenjang
                 $('#filter-jenjang').on('change', function() {
-                    table.column(2).search(this.value).draw();
+                    table.column(3).search(this.value).draw();
                 });
 
-                // Custom Filter Status (Column 5)
+                // Custom Filter Status
                 $('#filter-status').on('change', function() {
+
                     var val = this.value;
                     if (val) {
-                        table.column(5).search(val, true, false).draw();
+                        table.column(5).search(val).draw();
                     } else {
                         table.column(5).search('').draw();
                     }
                 });
 
-                // Apply initial filters from server-side request (if any)
-                var initialQ = $('#filter-q').val();
-                var initialJenjang = $('#filter-jenjang').val();
-                var initialStatus = $('#filter-status').val();
-
-                if (initialQ) table.search(initialQ);
-                if (initialJenjang) table.column(2).search(initialJenjang);
-                if (initialStatus) table.column(5).search(initialStatus, true, false);
-
-                if (initialQ || initialJenjang || initialStatus) table.draw();
-
-                // --- Modal Logic & Action Handlers ---
-
+                // --- Modal Logic ---
                 const modalBackdrop = document.querySelector(".modal-backdrop");
                 const modalTitle = document.querySelector("[data-modal-title]");
                 const modalBody = document.querySelector("[data-modal-body]");
@@ -199,7 +189,6 @@
                     if (modalBackdrop) modalBackdrop.style.display = "none";
                 }
 
-                // Close handlers (duplicate safe)
                 document.querySelectorAll("[data-close-modal]").forEach(btn => {
                     btn.addEventListener("click", closeModal);
                 });
@@ -213,14 +202,15 @@
                 $('#table-pendaftar').on('click', '.btn-detail', function() {
                     var url = $(this).data('url');
                     openModal("Detail Pendaftar",
-                        '<div style="padding:20px; text-align:center;">Loading data...</div>');
+                        '<div style="padding:40px; text-align:center;"><i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i><p style="margin-top:10px; color:var(--text-light)">Memuat data...</p></div>'
+                    );
 
                     $.get(url, function(data) {
                         openModal("Detail Pendaftar", data);
                         attachModalActionHandlers();
                     }).fail(function() {
                         openModal("Error",
-                            '<div style="padding:20px; text-align:center; color:red;">Gagal memuat data.</div>'
+                            '<div style="padding:20px; text-align:center; color:var(--danger);">Gagal memuat data.</div>'
                         );
                     });
                 });
@@ -231,55 +221,87 @@
                         e.preventDefault();
                         var form = $(this);
                         var btn = form.find('button[type="submit"]');
-                        var originalText = btn.text();
+                        var originalText = btn.html();
 
-                        btn.prop('disabled', true).text('Menyimpan...');
+                        btn.prop('disabled', true).html(
+                            '<i class="fa-solid fa-circle-notch fa-spin"></i> Menyimpan...');
 
                         $.ajax({
                             url: form.attr('action'),
                             method: 'POST',
                             data: form.serialize(),
                             success: function(response) {
-                                alert(response.message);
-                                location.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => location.reload());
                             },
                             error: function(xhr) {
-                                alert('Terjadi kesalahan: ' + (xhr.responseJSON?.message ||
-                                    'Gagal update status'));
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Terjadi kesalahan: ' + (xhr.responseJSON
+                                        ?.message || 'Gagal update status')
+                                });
                             },
                             complete: function() {
-                                btn.prop('disabled', false).text(originalText);
+                                btn.prop('disabled', false).html(originalText);
                             }
                         });
                     });
 
                     // Delete Action
                     $('#btn-delete').on('click', function() {
-                        if (confirm('Yakin ingin menghapus data ini secara permanen?')) {
-                            var url = $(this).data('url');
-                            var btn = $(this);
-                            btn.prop('disabled', true).text('Menghapus...');
+                        Swal.fire({
+                            title: 'Yakin hapus data?',
+                            text: "Data yang dihapus tidak dapat dikembalikan!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#64748b',
+                            confirmButtonText: 'Ya, Hapus!',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                var url = $(this).data('url');
+                                var btn = $(this);
+                                btn.prop('disabled', true).html(
+                                    '<i class="fa-solid fa-circle-notch fa-spin"></i>');
 
-                            $.ajax({
-                                url: url,
-                                method: 'POST',
-                                data: {
-                                    _method: 'DELETE',
-                                    _token: '{{ csrf_token() }}'
-                                },
-                                success: function(response) {
-                                    alert(response.message);
-                                    location.reload();
-                                },
-                                error: function(xhr) {
-                                    alert('Gagal menghapus data.');
-                                    btn.prop('disabled', false).text('Hapus Data Pendaftar');
-                                }
-                            });
-                        }
+                                $.ajax({
+                                    url: url,
+                                    method: 'POST',
+                                    data: {
+                                        _method: 'DELETE',
+                                        _token: '{{ csrf_token() }}'
+                                    },
+                                    success: function(response) {
+                                        Swal.fire(
+                                            'Terhapus!',
+                                            response.message,
+                                            'success'
+                                        ).then(() => location.reload());
+                                    },
+                                    error: function(xhr) {
+                                        Swal.fire(
+                                            'Gagal!',
+                                            'Gagal menghapus data.',
+                                            'error'
+                                        );
+                                        btn.prop('disabled', false).html(
+                                            '<i class="fa-solid fa-trash"></i> Hapus Permanen'
+                                        );
+                                    }
+                                });
+                            }
+                        })
                     });
                 }
             });
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @endpush
 @endsection

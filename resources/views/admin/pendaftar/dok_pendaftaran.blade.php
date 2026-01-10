@@ -172,13 +172,9 @@
             <td>: {{ $data->nik_ayah }}</td>
         </tr>
         <tr>
-            <td>Tempat, Tgl Lahir</td>
-            <td>: {{ $data->tempat_lahir_ayah }}, {{ date('d F Y', strtotime($data->tanggal_lahir_ayah)) }}</td>
-        </tr>
-        <tr>
-            <td>Umur</td>
-            <td>: {{ $data->umur_ayah }}
-            </td>
+            <td>Umur, Tempat, Tgl Lahir</td>
+            <td>: {{ $data->umur_ayah . ', ' . $data->tempat_lahir_ayah }},
+                {{ date('d F Y', strtotime($data->tanggal_lahir_ayah)) }}</td>
         </tr>
         <tr>
             <td>Pendidikan Terakhir</td>
@@ -211,13 +207,9 @@
             <td>: {{ $data->nik_ibu }}</td>
         </tr>
         <tr>
-            <td>Tempat, Tgl Lahir</td>
-            <td>: {{ $data->tempat_lahir_ibu }}, {{ date('d F Y', strtotime($data->tanggal_lahir_ibu)) }}
-            </td>
-        </tr>
-        <tr>
-            <td>Umur</td>
-            <td>: {{ $data->umur_ibu }}
+            <td>Umur, Tempat, Tgl Lahir</td>
+            <td>: {{ $data->umur_ibu . ', ' . $data->tempat_lahir_ibu }},
+                {{ date('d F Y', strtotime($data->tanggal_lahir_ibu)) }}
             </td>
         </tr>
         <tr>

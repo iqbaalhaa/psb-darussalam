@@ -68,11 +68,13 @@
                 <div class="hero__content">
                     <div class="badge">
                         <span class="badge__dot" aria-hidden="true"></span>
-                        Penerimaan Santri Baru • <strong>TA 2026/2027</strong> • Gelombang <strong>1</strong> dibuka
+                        Penerimaan Santri Baru • <strong>TA {{ $tahunAktif->nama ?? 'TBA' }}</strong> • Gelombang
+                        <strong>1</strong> dibuka
                     </div>
 
                     <h1>
-                        Penerimaan Santri Baru <span class="accent">MA</span> — TA <span class="accent">2026/2027</span>
+                        Penerimaan Santri Baru <span class="accent">MA</span> — TA <span
+                            class="accent">{{ $tahunAktif->nama ?? 'TBA' }}</span>
                     </h1>
 
                     <p class="lead">

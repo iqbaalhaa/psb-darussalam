@@ -279,12 +279,12 @@
                             Berkas Belum Lengkap
                         </label>
                         <label class="radio-item">
-                            <input type="radio" name="status" value="reject"
+                            <input type="radio" name="status" value="ditolak"
                                 {{ $data->status == 'reject' ? 'checked' : '' }}>
                             Tolak
                         </label>
                         <label class="radio-item">
-                            <input type="radio" name="status" value="accept"
+                            <input type="radio" name="status" value="diterima"
                                 {{ $data->status == 'accept' ? 'checked' : '' }}>
                             Terima
                         </label>
@@ -337,180 +337,362 @@
         </div>
     </div>
 
+    {{-- KODINGAN PERTAMA CONFLICT (AKU) --}}
+    {{-- END KODINGAN PERTAMA CONFLICT (AKU) --}}
+
+
     <div class="container-profile">
-        <div class="card header-card">
-            <div class="header-top">
-                <h2>Profil Siswa: {{ $data->nama }}</h2>
-                <div class="header-actions">
-                    <button id="btnOpenStatus" class="btn-status">Update Status Penerimaan</button>
-                    <button id="btnOpenStatusPembayaran" class="btn-status">Update Status Pembayaran</button>
-                    {{-- <span class="badge {{ $data->is_locked ? "locked" : "unlocked" }}"> --}}
+        {{-- Breadcrumb / Header --}}
+        <div class="page-header">
+            <div class="page-title">
+                <h1>Detail Pendaftar</h1>
+                <p>Informasi lengkap dan status pendaftaran siswa</p>
+            </div>
+            <a href="{{ url('admin/pendaftar') }}" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+            </a>
+        </div>
 
-                    @if ($data->status == 'pending')
-                        <span class="badge" style="background: yellow">Pending</span>
-                    @elseif ($data->status == 'incomplete_file')
-                        <span class="badge" style="background: grey">Berkas Belum Lengkap</span>
-                    @elseif ($data->status == 'reject')
-                        <span class="badge" style="background: red">Ditolak</span>
-                    @else
-                        <span class="badge" style="background: green">Diterima</span>
-                    @endif
+        {{-- Profile Header Card --}}
+        <div class="profile-header">
+            <div class="profile-info">
+                <h2>{{ $data->nama }}</h2>
+                <div class="profile-meta">
+                    <span><i class="fa-solid fa-graduation-cap"></i> {{ $data->jenjang }}</span>
+                    <span><i class="fa-solid fa-envelope"></i> {{ $data->email }}</span>
+                    <span><i class="fa-brands fa-whatsapp"></i> {{ $data->wa }}</span>
+                </div>
+            </div>
 
-                </div>
-            </div>
-            <div class="header-grid">
-                <div class="info-item">
-                    <label>Keterangan</label>
-                    <span>{{ $data->keterangan }}</span>
-                </div>
-            </div>
-            <div class="header-grid">
-                <div class="info-item">
-                    <label>Status Pembayaran</label>
-                    <span>{{ $data->status_pembayaran == 'belum_lunas' ? 'Belum Lunas' : 'Lunas' }}</span>
-                </div>
-            </div>
-            <div class="header-grid">
-                <div class="info-item">
-                    <label>Dokumen Formulir</label>
-                    <a href="{{ url('form-pendaftaran-pdf/' . $data->id) }}">Dok Pendaftaran</a><br>
-                    <a href="{{ url('form-pernyataan-pdf/' . $data->id) }}">Dok Pernyataan</a><br>
-                    <a href="{{ url('form-janji-santri-pdf/' . $data->id) }}">Dok Janji Santri</a><br>
-                    <a href="{{ url('form-syarat-pendaftaran') }}">Syarat Pendaftaran</a>
-                </div>
-            </div>
-            <hr>
-            <div class="header-grid">
-                <div class="info-item">
-                    <label>Jenjang</label>
-                    <span>{{ $data->jenjang }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Email</label>
-                    <span>{{ $data->email }}</span>
-                </div>
-                <div class="info-item">
-                    <label>WhatsApp</label>
-                    <span>{{ $data->wa }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Status Perubah Data</label>
-                    @if ($data->is_locked)
-                        <span>Data tidak bisa dirubah oleh user </span>
-                    @else
-                        <span> Data bisa dirubah oleh user</span>
-                    @endif
+            {{-- KODINGAN KEDUA CONFLICT (AKU) --}}
+            {{-- END KODINGAN KEDUA CONFLICT --}}
+
+
+
+            <div class="profile-actions">
+                <button id="btnOpenStatus" class="btn-action btn-update">
+                    <i class="fa-solid fa-pen-to-square"></i> Update Status
+                </button>
+                @php
+                    $statusClass = match ($data->status) {
+                        'pending' => 'status-pending',
+                        'incomplete_file' => 'status-incomplete',
+                        'ditolak' => 'status-reject',
+                        'diterima' => 'status-accept',
+                        default => 'status-pending',
+                    };
+                    $statusLabel = match ($data->status) {
+                        'pending' => 'Pending',
+                        'incomplete_file' => 'Berkas Belum Lengkap',
+                        'ditolak' => 'Ditolak',
+                        'diterima' => 'Diterima',
+                        default => 'Pending',
+                    };
+                    $statusIcon = match ($data->status) {
+                        'pending' => 'fa-clock',
+                        'incomplete_file' => 'fa-file-circle-exclamation',
+                        'ditolak' => 'fa-circle-xmark',
+                        'diterima' => 'fa-circle-check',
+                        default => 'fa-clock',
+                    };
+                @endphp
+                <div class="status-badge {{ $statusClass }}">
+                    <i class="fa-solid {{ $statusIcon }}"></i> {{ $statusLabel }}
                 </div>
             </div>
         </div>
 
         <div class="main-grid">
-            <div class="card">
-                <h3 class="section-title">Biodata Pribadi</h3>
-                <table class="detail-table">
-                    <tr>
-                        <td>NISN</td>
-                        <td>: {{ $data->nisn }}</td>
-                    </tr>
-                    <tr>
-                        <td>NIK</td>
-                        <td>: {{ $data->nik }}</td>
-                    </tr>
-                    <tr>
-                        <td>TTL</td>
-                        <td>: {{ $data->tempat_lahir }}, {{ $data->tanggal_lahir }}</td>
-                    </tr>
-                    <tr>
-                        <td>Gender</td>
-                        <td>: {{ $data->jenis_kelamin }}</td>
-                    </tr>
-                    <tr>
-                        <td>Sekolah Asal</td>
-                        <td>: {{ $data->asal_sekolah }}</td>
-                    </tr>
-                    <tr>
-                        <td>Anak Ke</td>
-                        <td>: {{ $data->anak_ke }} dari {{ $data->jumlah_saudara }} bersaudara</td>
-                    </tr>
-                    <tr>
-                        <td>Alamat</td>
-                        <td>: {{ $data->alamat }}</td>
-                    </tr>
-                </table>
+            {{-- Left Column: Biodata & Parents --}}
+            <div class="left-col">
+                {{-- Info Utama --}}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-circle-info"></i> Informasi Pendaftaran</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Status Pembayaran</div>
+                            <div class="detail-value">
+                                {{ $data->status_pembayaran == 'belum_lunas' ? 'Belum Lunas' : 'Lunas' }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Keterangan</div>
+                            <div class="detail-value">{{ $data->keterangan ?? '-' }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Status Data</div>
+                            <div class="detail-value">
+                                @if ($data->is_locked)
+                                    <span style="color: var(--danger);"><i class="fa-solid fa-lock"></i> Terkunci</span>
+                                @else
+                                    <span style="color: var(--success);"><i class="fa-solid fa-lock-open"></i>
+                                        Terbuka</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Biodata Siswa --}}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-user"></i> Biodata Pribadi</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">NISN</div>
+                            <div class="detail-value">{{ $data->nisn }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">NIK</div>
+                            <div class="detail-value">{{ $data->nik }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tempat, Tanggal Lahir</div>
+                            <div class="detail-value">{{ $data->tempat_lahir }}, {{ $data->tanggal_lahir }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Jenis Kelamin</div>
+                            <div class="detail-value">{{ $data->jenis_kelamin }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Sekolah Asal</div>
+                            <div class="detail-value">{{ $data->asal_sekolah }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Anak Ke</div>
+                            <div class="detail-value">{{ $data->anak_ke }} dari {{ $data->jumlah_saudara }} bersaudara
+                            </div>
+                        </div>
+                        <div class="detail-item" style="grid-column: 1 / -1;">
+                            <div class="detail-label">Alamat Lengkap</div>
+                            <div class="detail-value">{{ $data->alamat }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Data Orang Tua --}}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-users"></i> Data Orang Tua</h3>
+                    </div>
+                    <div style="display: grid; gap: 20px;">
+                        {{-- Ayah --}}
+                        <div class="parent-section">
+                            <div class="parent-header"><i class="fa-solid fa-mars"></i> Data Ayah</div>
+                            <div class="info-grid">
+                                <div class="detail-item">
+                                    <div class="detail-label">Nama Lengkap</div>
+                                    <div class="detail-value">{{ $data->nama_ayah }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">NIK</div>
+                                    <div class="detail-value">{{ $data->nik_ayah }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Pendidikan</div>
+                                    <div class="detail-value">{{ $data->pendidikan_terakhir_ayah }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">No. HP / WA</div>
+                                    <div class="detail-value">{{ $data->no_hp_ayah }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Ibu --}}
+                        <div class="parent-section">
+                            <div class="parent-header"><i class="fa-solid fa-venus"></i> Data Ibu</div>
+                            <div class="info-grid">
+                                <div class="detail-item">
+                                    <div class="detail-label">Nama Lengkap</div>
+                                    <div class="detail-value">{{ $data->nama_ibu }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">NIK</div>
+                                    <div class="detail-value">{{ $data->nik_ibu }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Pendidikan</div>
+                                    <div class="detail-value">{{ $data->pendidikan_terakhir_ibu }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">No. HP / WA</div>
+                                    <div class="detail-value">{{ $data->no_hp_ibu }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--text-light); text-align: center;">
+                        <i class="fa-solid fa-info-circle"></i> No. KK: <strong>{{ $data->no_kk }}</strong> | Kode Pos:
+                        <strong>{{ $data->kode_pos }}</strong>
+                    </div>
+                </div>
             </div>
 
-            <div class="card">
-                <h3 class="section-title">Data Orang Tua</h3>
-                <div class="parent-box ayah">
-                    <h4>Data Ayah</h4>
-                    <table class="detail-table">
-                        <tr>
-                            <td width="30%">Nama</td>
-                            <td>: <strong>{{ $data->nama_ayah }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>NIK</td>
-                            <td>: {{ $data->nik_ayah }}</td>
-                        </tr>
-                        <tr>
-                            <td>TTL</td>
-                            <td>: {{ $data->tempat_lahir_ayah }}, {{ $data->tanggal_lahir_ayah }}</td>
-                        </tr>
-                        <tr>
-                            <td>Pendidikan</td>
-                            <td>: {{ $data->pendidikan_terakhir_ayah }}</td>
-                        </tr>
-                        <tr>
-                            <td>No HP / WA</td>
-                            <td>: {{ $data->no_hp_ayah }}</td>
-                        </tr>
-                        <tr>
-                            <td>Alamat</td>
-                            <td>: {{ $data->alamat_ayah ?? $data->alamat }}</td>
-                            {{-- Gunakan alamat siswa jika alamat ayah kosong --}}
-                        </tr>
-                    </table>
+            {{-- Right Column: Files --}}
+            <div class="right-col">
+                <div class="card" style="position: sticky; top: 20px;">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-folder-open"></i> Dokumen</h3>
+                    </div>
+                    <div class="file-grid">
+                        @php
+                            $files = [
+                                'Biodata' => $data->file_biodata,
+                                'Rapor' => $data->file_rapor,
+                                'Ijazah' => $data->file_ijazah,
+                                'SKL' => $data->file_skl,
+                                'Akta' => $data->file_akta_kelahiran,
+                                'KK' => $data->file_kk,
+                                'Foto' => $data->file_pas_foto,
+                                'KTP Ayah' => $data->file_ktp_ayah,
+                                'KTP Ibu' => $data->file_ktp_ibu,
+                                'KIP' => $data->file_kip,
+                                'BPJS' => $data->file_bpjs,
+                            ];
+                        @endphp
+
+                        @foreach ($files as $label => $file)
+                            @if ($file)
+                                <a href="{{ asset('Berkas/' . $file) }}" target="_blank" class="file-card">
+                                    <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                                    <div class="file-name">{{ $label }}</div>
+                                    <span style="font-size: 0.7rem; color: var(--success);">Tersedia</span>
+                                </a>
+                            @else
+                                <div class="file-card file-missing">
+                                    <div class="file-icon"><i class="fa-solid fa-file-circle-xmark"></i></div>
+                                    <div class="file-name">{{ $label }}</div>
+                                    <span style="font-size: 0.7rem;">Tidak Ada</span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
                 </div>
-                <div class="parent-box ibu" style="margin-top: 20px;">
-                    <h4>Data Ibu</h4>
-                    <table class="detail-table">
-                        <tr>
-                            <td width="30%">Nama</td>
-                            <td>: <strong>{{ $data->nama_ibu }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>NIK</td>
-                            <td>: {{ $data->nik_ibu }}</td>
-                        </tr>
-                        <tr>
-                            <td>TTL</td>
-                            <td>: {{ $data->tempat_lahir_ibu }}, {{ $data->tanggal_lahir_ibu }}</td>
-                        </tr>
-                        <tr>
-                            <td>Pendidikan</td>
-                            <td>: {{ $data->pendidikan_terakhir_ibu }}</td>
-                        </tr>
-                        <tr>
-                            <td>No HP / WA</td>
-                            <td>: {{ $data->no_hp_ibu }}</td>
-                        </tr>
-                        <tr>
-                            <td>Alamat</td>
-                            <td>: {{ $data->alamat_ibu ?? $data->alamat }}</td>
-                        </tr>
-                    </table>
-                </div>
-                <p style="font-size: 12px; margin-top: 10px;">No. KK: {{ $data->no_kk }} | Kode Pos:
-                    {{ $data->kode_pos }}</p>
             </div>
         </div>
+    </div>
 
-        <div class="card">
-            <h3 class="section-title">Dokumen Pendukung</h3>
+    {{-- Premium Modal Update Status --}}
+    <div id="modalStatus" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <h3 class="modal-title">Update Status</h3>
+                    <span class="modal-subtitle">Ubah status pendaftaran siswa</span>
+                </div>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="formUpdateStatus" action="{{ url('admin/update-status-pendaftaran/' . $data->id) }}"
+                method="POST">
+                @csrf
+                <div class="modal-body">
+                    <label class="form-label">Pilih Status Baru</label>
+                    <div class="status-grid">
+                        {{-- Pending --}}
+                        <div class="status-card pending {{ $data->status == 'pending' ? 'selected' : '' }}"
+                            onclick="selectStatus(this, 'pending')">
+                            <input type="radio" name="status" value="pending"
+                                {{ $data->status == 'pending' ? 'checked' : '' }}>
+                            <div class="status-icon"><i class="fa-solid fa-clock"></i></div>
+                            <div class="status-info">
+                                <span class="status-label">Pending</span>
+                                <span class="status-desc">Menunggu verifikasi</span>
+                            </div>
+                            <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                        </div>
+
+                        {{-- Incomplete --}}
+                        <div class="status-card incomplete {{ $data->status == 'incomplete_file' ? 'selected' : '' }}"
+                            onclick="selectStatus(this, 'incomplete_file')">
+                            <input type="radio" name="status" value="incomplete_file"
+                                {{ $data->status == 'incomplete_file' ? 'checked' : '' }}>
+                            <div class="status-icon"><i class="fa-solid fa-file-circle-exclamation"></i></div>
+                            <div class="status-info">
+                                <span class="status-label">Belum Lengkap</span>
+                                <span class="status-desc">Berkas kurang</span>
+                            </div>
+                            <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                        </div>
+
+                        {{-- Reject --}}
+                        <div class="status-card reject {{ $data->status == 'reject' ? 'selected' : '' }}"
+                            onclick="selectStatus(this, 'reject')">
+                            <input type="radio" name="status" value="reject"
+                                {{ $data->status == 'reject' ? 'checked' : '' }}>
+                            <div class="status-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+                            <div class="status-info">
+                                <span class="status-label">Ditolak</span>
+                                <span class="status-desc">Tidak lolos seleksi</span>
+                            </div>
+                            <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                        </div>
+
+                        {{-- Accept --}}
+                        <div class="status-card accept {{ $data->status == 'accept' ? 'selected' : '' }}"
+                            onclick="selectStatus(this, 'accept')">
+                            <input type="radio" name="status" value="accept"
+                                {{ $data->status == 'accept' ? 'checked' : '' }}>
+                            <div class="status-icon"><i class="fa-solid fa-circle-check"></i></div>
+                            <div class="status-info">
+                                <span class="status-label">Diterima</span>
+                                <span class="status-desc">Lolos seleksi masuk</span>
+                            </div>
+                            <div class="check-indicator"><i class="fa-solid fa-check"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keterangan" class="form-label">Catatan / Keterangan Tambahan</label>
+                        <textarea name="keterangan" id="keterangan" rows="4"
+                            placeholder="Tuliskan alasan perubahan status atau instruksi selanjutnya...">{{ $data->keterangan }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel close-modal">Batal</button>
+                    <button type="submit" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Simpan
+                        Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container-profile">
+        <div class="card" style="position: sticky; top: 20px;">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fa-solid fa-folder-open"></i> Dokumen </h3>
+            </div>
             <div class="file-grid">
-                @php
+
+                <a href="{{ url('form-pendaftaran-pdf/' . $data->id) }}" target="_blank" class="file-card">
+                    <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="file-name">Dokumen Pendaftaran</div>
+                    {{-- <span style="font-size: 0.7rem; color: var(--success);">Tersedia</span> --}}
+                </a>
+
+                <a href="{{ url('form-pernyataan-pdf/' . $data->id) }}" target="_blank" class="file-card">
+                    <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="file-name">Dokumen Pernyataan</div>
+                    {{-- <span style="font-size: 0.7rem; color: var(--success);">Tersedia</span> --}}
+                </a>
+
+                <a href="{{ url('form-janji-santri-pdf/' . $data->id) }}" target="_blank" class="file-card">
+                    <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="file-name">Dokumen Janji Santri</div>
+                    {{-- <span style="font-size: 0.7rem; color: var(--success);">Tersedia</span> --}}
+                </a>
+
+                <a href="{{ url('form-syarat-pendaftaran/') }}" target="_blank" class="file-card">
+                    <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="file-name">Dokumen Janji Santri</div>
+                    {{-- <span style="font-size: 0.7rem; color: var(--success);">Tersedia</span> --}}
+                </a>
+
+                {{-- @php
                     $files = [
-                        'Biodata' => $data->file_biodata,
+                        'dokument penrnyataan' => $data->file_biodata,
                         'Rapor' => $data->file_rapor,
                         'Ijazah' => $data->file_ijazah,
                         'SKL' => $data->file_skl,
@@ -526,63 +708,98 @@
 
                 @foreach ($files as $label => $file)
                     @if ($file)
-                        <a href="{{ asset('Berkas/' . $file) }}" target="_blank" class="file-link">
-                            📄 {{ $label }}
+                        <a href="{{ asset('Berkas/' . $file) }}" target="_blank" class="file-card">
+                            <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                            <div class="file-name">{{ $label }}</div>
+                            <span style="font-size: 0.7rem; color: var(--success);">Tersedia</span>
                         </a>
                     @else
-                        <div class="file-link" style="background: red">📄 {{ $label }}</div>
+                        <div class="file-card file-missing">
+                            <div class="file-icon"><i class="fa-solid fa-file-circle-xmark"></i></div>
+                            <div class="file-name">{{ $label }}</div>
+                            <span style="font-size: 0.7rem;">Tidak Ada</span>
+                        </div>
                     @endif
-                @endforeach
+                @endforeach --}}
             </div>
         </div>
     </div>
 
     @session('success')
         <script>
-            alert("{{ session('success') }}")
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('success') }}',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'animated bounceIn'
+                    }
+                });
+            });
         </script>
     @endsession
 
     @push('scripts')
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        {{-- Pastikan SweetAlert2 sudah diload di master layout --}}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
         <script>
+            // Helper function for status selection
+            function selectStatus(element, value) {
+                // Remove selected class from all cards
+                document.querySelectorAll('.status-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+
+                // Add selected class to clicked card
+                element.classList.add('selected');
+
+                // Check the radio input
+                const radio = element.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+            }
+
             $(document).ready(function() {
-                // Membuka Modal Status Penerimaan
+                const modal = $('#modalStatus');
                 $('#btnOpenStatus').on('click', function() {
-                    $('#modalStatus').fadeIn(300);
+                    modal.css('display', 'flex').hide().fadeIn(200);
+                    // Prevent body scroll
+                    $('body').css('overflow', 'hidden');
                 });
 
-                // Membuaka Modal Status Pembayaran
-                $('#btnOpenStatusPembayaran').on('click', function() {
-                    $('#modalStatusPembayaran').fadeIn(300);
+                // KODINGAN KETIGA CONFLICT (KODINGAN AKU)
+                // END KODINGAN KETIGA CONFLICT (KODINGAN AKU)
+
+
+                // Close Modal Logic
+                function closeModal() {
+                    modal.fadeOut(200, function() {
+                        $('body').css('overflow', 'auto');
+                    });
+                }
+
+                $('.close-modal').on('click', function(e) {
+                    e.preventDefault(); // Prevent form submission if button inside form
+                    closeModal();
                 });
 
-                // Menutup Modal (Klik X, tombol Batal, atau klik di luar modal)
-                $('.close-modal').on('click', function() {
-                    $('#modalStatus').fadeOut(300);
-                });
-
-                // Menutup Modal (Klik X, tombol Batal, atau klik di luar modal)
-                $('.close-modal-pembayaran').on('click', function() {
-                    $('#modalStatus').fadeOut(300);
-                });
-
+                // Close on click outside
                 $(window).on('click', function(event) {
-                    if ($(event.target).is('#modalStatus')) {
-                        $('#modalStatus').fadeOut(300);
+                    if ($(event.target).is(modal)) {
+                        closeModal();
                     }
                 });
 
-                // Logika Radio Item (Agar klik di seluruh area kotak radio juga memilih)
-                $('.radio-item').on('click', function() {
-                    $(this).find('input[type="radio"]').prop('checked', true);
+                // Escape key to close
+                $(document).keydown(function(e) {
+                    if (e.key === "Escape" && modal.is(':visible')) {
+                        closeModal();
+                    }
                 });
-
-                // Handle Submit via AJAX (Optional) atau biarkan default form
-                // $('#formUpdateStatus').on('submit', function() {
-                //     // Tampilkan loading jika diperlukan
-                //     $('.btn-save').text('Menyimpan...').prop('disabled', true);
-                // });
             });
         </script>
     @endpush
