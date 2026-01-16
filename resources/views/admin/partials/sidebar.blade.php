@@ -59,6 +59,13 @@
 
     <div class="section">Pengaturan</div>
 
+    <a class="{{ $isActive('admin.home-settings.edit') }}" href="{{ route('admin.home-settings.edit') }}">
+      <span class="icon">
+        <i class="fa-solid fa-user-gear"></i>
+      </span>
+      (HOME) Content Management System 
+    </a>
+
     <a class="{{ $isActive('admin.akun.index') }}" href="{{ route('admin.akun.index') }}">
       <span class="icon">
         <i class="fa-solid fa-user-gear"></i>

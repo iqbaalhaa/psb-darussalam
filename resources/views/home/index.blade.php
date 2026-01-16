@@ -6,8 +6,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="Penerimaan Santri Baru MA - Pondok Pesantren DARUSSALAM AL-HAFIDZ, Kota Jambi." />
-    <title>PSB MA — DARUSSALAM AL-HAFIDZ (Kota Jambi)</title>
+    <meta name="description"
+        content="Penerimaan Santri Baru MTs &amp; MA Pondok Pesantren DARUSSALAM AL-HAFIDZ, Kenali Asam Atas - Kota Jambi." />
+    <meta name="wa-number-display" content="{{ optional(\App\Models\HomeSetting::first())->wa_number_display }}">
+    <meta name="wa-number-e164" content="{{ optional(\App\Models\HomeSetting::first())->wa_number_e164 }}">
+    <meta name="wa-default-text" content="{{ optional(\App\Models\HomeSetting::first())->wa_default_text }}">
+    <title>PSB MTs &amp; MA — DARUSSALAM AL-HAFIDZ (Kota Jambi)</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +33,7 @@
                 <div class="brand__mark" aria-hidden="true">۞</div>
                 <div class="brand__text">
                     <div class="brand__name">DARUSSALAM AL-HAFIDZ</div>
-                    <div class="brand__tagline">Penerimaan Santri Baru • MA</div>
+                    <div class="brand__tagline">Penerimaan Santri Baru • MTs &amp; MA</div>
                 </div>
             </a>
 
@@ -68,40 +72,58 @@
                 <div class="hero__content">
                     <div class="badge">
                         <span class="badge__dot" aria-hidden="true"></span>
-                        Penerimaan Santri Baru • <strong>TA {{ $tahunAktif->nama ?? 'TBA' }}</strong> • Gelombang
-                        <strong>1</strong> dibuka
+                        Penerimaan Santri Baru MTs &amp; MA • <strong>TA {{ $tahunAktif->nama ?? 'TBA' }}</strong> •
+                        Gelombang <strong>1</strong> dibuka
                     </div>
 
+                    @php
+                        $homeSetting = \App\Models\HomeSetting::first();
+                    @endphp
                     <h1>
-                        Penerimaan Santri Baru <span class="accent">MA</span> — TA <span
-                            class="accent">{{ $tahunAktif->nama ?? 'TBA' }}</span>
+                        {{ $homeSetting->hero_title ?? 'Menerima Santri Baru ' }}<span class="accent">MTs &amp; MA</span>
                     </h1>
 
                     <p class="lead">
-                        Membina akhlak, menguatkan tahfidz, dan membangun prestasi dalam lingkungan pesantren yang aman
-                        & terarah.
+                        {{ $homeSetting->hero_lead ?? 'Sekolah berkualitas dengan biaya terjangkau, menguatkan tahfidz, adab, dan prestasi santri MTs &amp; MA.' }}
                     </p>
 
                     <p class="muted">
-                        Pondok Pesantren DARUSSALAM AL-HAFIDZ (Kota Jambi) menghadirkan pembinaan harian dengan
-                        pendampingan ustadz/ustadzah serta komunikasi rutin bersama wali santri.
+                        {{ $homeSetting->hero_muted ?? 'Pondok Pesantren DARUSSALAM AL-HAFIDZ berlokasi di Kenali Asam Atas, Kota Jambi, dengan pembinaan harian, pengawasan ustadz/ustadzah, dan komunikasi rutin bersama wali santri.' }}
                     </p>
 
                     <div class="hero__cta">
                         <a class="btn btn--primary" href="#daftar">Daftar Sekarang</a>
-                        <a class="btn btn--outline" href="#" target="_blank" rel="noopener">Unduh Brosur (PDF)</a>
+                        @if ($homeSetting && $homeSetting->brochure_url)
+                            <a class="btn btn--outline" href="{{ $homeSetting->brochure_url }}" target="_blank"
+                                rel="noopener">Lihat Brosur Lengkap</a>
+                        @else
+                            <a class="btn btn--outline" href="#" target="_blank" rel="noopener">Lihat Brosur Lengkap</a>
+                        @endif
                     </div>
 
                     <div class="chips" role="list" aria-label="Informasi ringkas">
-                        <div class="chip" role="listitem">📍 Lokasi: <strong>Kota Jambi</strong></div>
-                        <div class="chip" role="listitem">🎓 Jenjang: <strong>MA</strong></div>
-                        <div class="chip" role="listitem">👥 Kuota: <strong>60</strong> santri (contoh)</div>
+                        <div class="chip" role="listitem">📍 Lokasi:
+                            <strong>{{ $homeSetting->hero_chip_location ?? 'Kenali Asam Atas, Kota Jambi' }}</strong>
+                        </div>
+                        <div class="chip" role="listitem">🎓 Jenjang:
+                            <strong>{{ $homeSetting->hero_chip_jenjang ?? 'MTs & MA' }}</strong>
+                        </div>
+                        <div class="chip" role="listitem">🏫 Program:
+                            <strong>{{ $homeSetting->hero_chip_program ?? 'Formal & Non Formal' }}</strong>
+                        </div>
                     </div>
                 </div>
 
                 <div class="hero__media" aria-label="Foto kegiatan">
                     <div class="mediaCard">
-                        <div class="mediaCard__image" role="img" aria-label="Foto santri belajar dan tahfidz"></div>
+                        @php
+                            $homeSetting = $homeSetting ?? \App\Models\HomeSetting::first();
+                        @endphp
+                        <div class="mediaCard__image" role="img" aria-label="Foto santri belajar dan tahfidz"
+                            @if ($homeSetting && $homeSetting->hero_image_path)
+                                style="background-image: url('{{ asset($homeSetting->hero_image_path) }}'); background-size: cover; background-position: center;"
+                            @endif
+                        ></div>
                         <div class="mediaCard__caption">
                             <div class="mediaCard__captionTitle">Lingkungan belajar yang tertib & hangat</div>
                             <div class="mediaCard__captionText">Foto asli kegiatan • DARUSSALAM AL-HAFIDZ</div>
@@ -153,104 +175,101 @@
         <section class="section section--soft" id="program">
             <div class="container">
                 <div class="section__head">
-                    <h2>Program Pendidikan</h2>
-                    <p class="muted">Ringkasan program (sementara). Nanti bisa kamu sesuaikan sesuai kurikulum di
+                    <h2>Visi, Misi &amp; Program Unggulan</h2>
+                    <p class="muted">Ringkasan visi, misi, dan program unggulan MTs &amp; MA Pondok Pesantren
                         DARUSSALAM AL-HAFIDZ.</p>
                 </div>
 
                 <div class="tabs" data-tabs>
                     <div class="tabs__list" role="tablist" aria-label="Tab program">
                         <button class="tabs__tab is-active" role="tab" aria-selected="true"
-                            aria-controls="tab-tahfidz" id="tahfidz">Tahfidz</button>
-                        <button class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-diniyah"
-                            id="diniyah">Diniyah</button>
-                        <button class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-akademik"
-                            id="akademik">Akademik (MA)</button>
-                        <button class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-kegiatan"
-                            id="kegiatan">Kegiatan</button>
+                            aria-controls="tab-visi" id="visi">Visi</button>
+                        <button class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-misi"
+                            id="misi">Misi</button>
+                        <button class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-unggulan"
+                            id="unggulan">Program Unggulan</button>
+                        <button class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-kami"
+                            id="kami">Inilah Kami</button>
                     </div>
 
                     <div class="tabs__panels">
-                        <div class="tabs__panel is-active" role="tabpanel" id="tab-tahfidz"
-                            aria-labelledby="tahfidz">
+                        <div class="tabs__panel is-active" role="tabpanel" id="tab-visi" aria-labelledby="visi">
                             <div class="panelGrid">
                                 <div class="card">
-                                    <h3>Halaqah & Target Bertahap</h3>
+                                    <h3>Visi Madrasah</h3>
+                                    <p class="muted">Membentuk generasi muslim yang berilmu, berakhlakul karimah,
+                                        berdisiplin, dan bertakwa kepada Allah Subhanahu wa Ta’ala.</p>
+                                </div>
+                                <div class="card">
+                                    <h3>Arah Pendidikan</h3>
+                                    <p class="muted">Menjadikan MTs &amp; MA Darussalam Al Hafidz sebagai lembaga
+                                        pendidikan berkualitas yang memadukan ilmu umum dan keislaman dalam suasana
+                                        pesantren.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tabs__panel" role="tabpanel" id="tab-misi" aria-labelledby="misi">
+                            <div class="panelGrid">
+                                <div class="card">
+                                    <h3>Misi Madrasah</h3>
                                     <ul class="list">
-                                        <li>Pembagian halaqah sesuai level</li>
-                                        <li>Setoran harian dan murajaah</li>
-                                        <li>Evaluasi pekanan/bulanan</li>
+                                        <li>Menyelenggarakan pendidikan yang berlandaskan Al-Qur’an dan As-Sunnah.</li>
+                                        <li>Menanamkan akhlakul karimah dan kedisiplinan dalam kehidupan santri.</li>
+                                        <li>Mengembangkan kemampuan akademik, tahfidz, dan keterampilan santri.</li>
+                                        <li>Membiasakan suasana belajar yang islami, tertib, dan penuh kasih sayang.
+                                        </li>
                                     </ul>
                                 </div>
                                 <div class="card">
-                                    <h3>Metode Pembinaan</h3>
+                                    <h3>Target Lulusan</h3>
+                                    <p class="muted">Lulusan diharapkan menjadi generasi yang berakidah lurus, mampu
+                                        membaca dan menghafal Al-Qur’an dengan baik, serta siap melanjutkan pendidikan
+                                        ke jenjang yang lebih tinggi.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tabs__panel" role="tabpanel" id="tab-unggulan" aria-labelledby="unggulan">
+                            <div class="panelGrid">
+                                <div class="card">
+                                    <h3>Program Unggulan</h3>
                                     <ul class="list">
-                                        <li>Adab tilawah dan tajwid</li>
-                                        <li>Pendampingan ustadz/ustadzah</li>
-                                        <li>Penguatan motivasi & disiplin</li>
+                                        <li>Program Tahfidzul Qur’an.</li>
+                                        <li>Program Madrasah Diniyah.</li>
+                                        <li>Program penguatan bahasa Arab dan Inggris.</li>
+                                        <li>Program pembinaan akhlak dan kedisiplinan santri.</li>
+                                        <li>Program pengembangan minat bakat dan keterampilan.</li>
+                                    </ul>
+                                </div>
+                                <div class="card">
+                                    <h3>Kegiatan Penunjang</h3>
+                                    <ul class="list">
+                                        <li>Kegiatan keagamaan dan peringatan hari besar Islam.</li>
+                                        <li>Latihan kepemimpinan, organisasi, dan kedisiplinan.</li>
+                                        <li>Olahraga, seni, dan keterampilan lain yang bermanfaat.</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="tabs__panel" role="tabpanel" id="tab-diniyah" aria-labelledby="diniyah">
+                        <div class="tabs__panel" role="tabpanel" id="tab-kami" aria-labelledby="kami">
                             <div class="panelGrid">
                                 <div class="card">
-                                    <h3>Materi Dasar</h3>
+                                    <h3>Inilah Kami</h3>
                                     <ul class="list">
-                                        <li>Aqidah & akhlak</li>
-                                        <li>Fikih ibadah</li>
-                                        <li>Tafsir/hadits dasar</li>
+                                        <li>Sekolah yang menanamkan kejujuran dan tanggung jawab dunia-akhirat.</li>
+                                        <li>Sekolah yang membudayakan kasih sayang dan persaudaraan.</li>
+                                        <li>Sekolah yang membiasakan santri cinta Al-Qur’an.</li>
+                                        <li>Sekolah yang menyiapkan generasi yang taat kepada Allah dan Rasul-Nya.</li>
                                     </ul>
                                 </div>
                                 <div class="card">
-                                    <h3>Pembiasaan</h3>
+                                    <h3>Tagline</h3>
                                     <ul class="list">
-                                        <li>Adab harian dan kebersihan</li>
-                                        <li>Budaya disiplin dan tanggung jawab</li>
-                                        <li>Kajian rutin & pembinaan karakter</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tabs__panel" role="tabpanel" id="tab-akademik" aria-labelledby="akademik">
-                            <div class="panelGrid">
-                                <div class="card">
-                                    <h3>Kurikulum MA & Pendampingan</h3>
-                                    <ul class="list">
-                                        <li>Kurikulum MA sesuai ketentuan</li>
-                                        <li>Jadwal belajar terarah</li>
-                                        <li>Remedial & pengayaan (opsional)</li>
-                                    </ul>
-                                </div>
-                                <div class="card">
-                                    <h3>Profil Lulusan</h3>
-                                    <ul class="list">
-                                        <li>Berakhlak baik dan disiplin ibadah</li>
-                                        <li>Mampu baca Qur’an baik + tahfidz sesuai program</li>
-                                        <li>Mandiri dan siap melanjutkan pendidikan</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tabs__panel" role="tabpanel" id="tab-kegiatan" aria-labelledby="kegiatan">
-                            <div class="panelGrid">
-                                <div class="card">
-                                    <h3>Ekstrakurikuler</h3>
-                                    <ul class="list">
-                                        <li>Bahasa (Arab/Inggris)</li>
-                                        <li>Public speaking</li>
-                                        <li>Olahraga & seni</li>
-                                    </ul>
-                                </div>
-                                <div class="card">
-                                    <h3>Kegiatan Sosial</h3>
-                                    <ul class="list">
-                                        <li>Bakti sosial</li>
-                                        <li>Kepemimpinan & organisasi santri</li>
-                                        <li>Program karakter</li>
+                                        <li>Pondok Pesantren Darussalam Al Hafidz.</li>
+                                        <li>Kenali Asam Atas – Kota Jambi.</li>
+                                        <li>Sekolah berkualitas dengan biaya terjangkau.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -363,37 +382,54 @@
         <section class="section" id="biaya">
             <div class="container">
                 <div class="section__head">
-                    <h2>Biaya Pendidikan (Sementara)</h2>
-                    <p class="muted">Ini angka contoh dulu. Nanti kamu tinggal ubah sesuai keputusan biaya resmi.</p>
+                    <h2>Rincian Biaya Pendidikan</h2>
+                    <p class="muted">Perkiraan biaya awal berdasarkan brosur PSB MTs &amp; MA Darussalam Al Hafidz,
+                        terdiri dari program formal dan non formal.</p>
                 </div>
+
+                @php
+                    $homeSetting = $homeSetting ?? \App\Models\HomeSetting::first();
+                    $formalItems = $homeSetting && $homeSetting->biaya_formal_items
+                        ? preg_split('/\r\n|\r|\n/', $homeSetting->biaya_formal_items)
+                        : ['Pendaftaran.', 'Uang makan (maṣlahah bulanan).', 'Seragam (3 set gamis).', 'Perlengkapan asrama dan belajar.', 'Pos-pos lain sesuai kebijakan pesantren.'];
+                    $nonformalItems = $homeSetting && $homeSetting->biaya_nonformal_items
+                        ? preg_split('/\r\n|\r|\n/', $homeSetting->biaya_nonformal_items)
+                        : ['Pendaftaran.', 'Uang makan (maṣlahah bulanan).', 'Seragam.', 'Perlengkapan asrama dan belajar.', 'Pos-pos lain sesuai kebijakan pesantren.'];
+                @endphp
 
                 <div class="grid grid--2">
                     <article class="priceCard">
                         <div class="priceCard__top">
-                            <h3>Biaya Awal (Daftar Ulang)</h3>
-                            <div class="priceCard__price">Rp 3.500.000</div>
-                            <div class="priceCard__sub muted">Contoh: seragam, buku, perlengkapan (sesuaikan)</div>
+                            <h3>Program Formal (MTs &amp; MA)</h3>
+                            <div class="priceCard__price">
+                                {{ $homeSetting->biaya_formal_total ?? 'Rp 5.500.000' }}</div>
+                            <div class="priceCard__sub muted">Total biaya awal sesuai rincian pada brosur.</div>
                         </div>
                         <ul class="list">
-                            <li>Seragam & atribut</li>
-                            <li>Buku/modul</li>
-                            <li>Perlengkapan asrama (opsional)</li>
+                            @foreach ($formalItems as $item)
+                                @if (trim($item) !== '')
+                                    <li>{{ $item }}</li>
+                                @endif
+                            @endforeach
                         </ul>
-                        <a class="btn btn--outline w-full" href="#kontak">Tanya rincian</a>
+                        <a class="btn btn--outline w-full" href="#kontak">Tanya rincian formal</a>
                     </article>
 
                     <article class="priceCard">
                         <div class="priceCard__top">
-                            <h3>SPP Bulanan</h3>
-                            <div class="priceCard__price">Rp 850.000</div>
-                            <div class="priceCard__sub muted">Contoh: makan/pengasuhan/kegiatan (sesuaikan)</div>
+                            <h3>Program Non Formal</h3>
+                            <div class="priceCard__price">
+                                {{ $homeSetting->biaya_nonformal_total ?? 'Rp 4.350.000' }}</div>
+                            <div class="priceCard__sub muted">Total biaya awal sesuai rincian pada brosur.</div>
                         </div>
                         <ul class="list">
-                            <li>Pengasuhan & kegiatan</li>
-                            <li>Belajar diniyah/tahfidz</li>
-                            <li>Fasilitas dasar</li>
+                            @foreach ($nonformalItems as $item)
+                                @if (trim($item) !== '')
+                                    <li>{{ $item }}</li>
+                                @endif
+                            @endforeach
                         </ul>
-                        <a class="btn btn--primary w-full" href="#daftar">Mulai daftar</a>
+                        <a class="btn btn--primary w-full" href="#daftar">Daftar program non formal</a>
                     </article>
                 </div>
 
@@ -414,30 +450,33 @@
         <section class="section section--soft" id="syarat">
             <div class="container">
                 <div class="section__head">
-                    <h2>Syarat & Berkas</h2>
-                    <p class="muted">Checklist agar wali santri mudah menyiapkan dokumen.</p>
+                    <h2>Syarat Pendaftaran</h2>
+                    <p class="muted">Ringkasan syarat dan berkas pendaftaran sebagaimana tercantum pada brosur resmi.
+                    </p>
                 </div>
 
                 <div class="grid grid--2">
                     <div class="card">
                         <h3>Syarat Umum</h3>
                         <ul class="checklist">
-                            <li>Mengisi formulir PSB</li>
-                            <li>Bersedia mengikuti tata tertib pesantren</li>
-                            <li>Mengikuti tes & wawancara sesuai jadwal</li>
+                            <li>Mengisi formulir pendaftaran santri baru.</li>
+                            <li>Siap mengikuti tata tertib pondok pesantren.</li>
+                            <li>Siap mengikuti kegiatan belajar mengajar dan kehidupan asrama.</li>
+                            <li>Mengikuti tes seleksi dan wawancara sesuai jadwal.</li>
                         </ul>
                     </div>
                     <div class="card">
                         <h3>Berkas yang Dibutuhkan</h3>
                         <ul class="checklist">
-                            <li>Fotokopi KK & Akta</li>
-                            <li>Pas foto 3x4 (2–4 lembar)</li>
-                            <li>Rapor terakhir / surat keterangan sekolah</li>
-                            <li>Surat sehat (jika diminta)</li>
+                            <li>Fotokopi ijazah/STTB atau surat keterangan lulus (jika sudah tersedia).</li>
+                            <li>Fotokopi raport terakhir.</li>
+                            <li>Fotokopi Kartu Keluarga dan Akta Kelahiran.</li>
+                            <li>Pas foto ukuran 3x4 (sesuai ketentuan brosur).</li>
+                            <li>Surat keterangan sehat dari dokter/puskesmas (bila diperlukan).</li>
                         </ul>
                         <div class="card__actions">
-                            <a class="btn btn--outline" href="#" target="_blank" rel="noopener">Unduh
-                                checklist</a>
+                            <a class="btn btn--outline" href="#" target="_blank" rel="noopener">Unduh brosur / syarat
+                                lengkap</a>
                         </div>
                     </div>
                 </div>
@@ -445,7 +484,7 @@
         </section>
 
         <!-- Fasilitas -->
-        <section class="section" id="fasilitas">
+        {{-- <section class="section" id="fasilitas">
             <div class="container">
                 <div class="section__head">
                     <h2>Fasilitas & Kehidupan Santri</h2>
@@ -486,10 +525,10 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> --}}
 
         <!-- Testimoni -->
-        <section class="section section--soft" id="testimoni">
+        {{-- <section class="section section--soft" id="testimoni">
             <div class="container">
                 <div class="section__head">
                     <h2>Apa kata wali santri & alumni</h2>
@@ -513,7 +552,7 @@
                     </figure>
                 </div>
             </div>
-        </section>
+        </section> --}}
 
         <!-- Daftar -->
         <section class="section" id="daftar" aria-label="Form pendaftaran PSB">
@@ -575,25 +614,6 @@
 
                         <div class="form__msg" id="formMsg" role="status" aria-live="polite"></div>
                     </form>
-
-                    <aside class="side card">
-                        <h3>Cek Status Pendaftaran</h3>
-                        <p class="muted">Masukkan nomor WA yang digunakan saat mendaftar.</p>
-
-                        <div class="status">
-                            <input class="field__input" id="statusInput" type="tel" placeholder="0812xxxxxxx" />
-                            <button class="btn btn--outline" id="btnCekStatus" type="button">Cek</button>
-                        </div>
-
-                        <div class="status__result" id="statusResult" aria-live="polite"></div>
-
-                        <hr class="sep" />
-
-                        <h3>Butuh bantuan cepat?</h3>
-                        <p class="muted">Admin PSB siap membantu mengisi data, upload berkas, dan info jadwal tes.</p>
-                        <a class="btn btn--primary w-full" id="btnWaSide" href="#" target="_blank"
-                            rel="noopener">Chat WhatsApp Admin</a>
-                    </aside>
                 </div>
             </div>
         </section>

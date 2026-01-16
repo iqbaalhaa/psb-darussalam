@@ -1,12 +1,25 @@
 // script.js
 
 // ====== CONFIG (GANTI INI NANTI) ======
-// Nomor WA admin dalam format E.164 Indonesia: 62 + nomor tanpa 0 depan.
-// Contoh kalau nomor kamu 0812-9999-8888 => 6281299998888
-const ADMIN_WA_E164 = "6281234567890"; // <-- GANTI KE NOMOR ASLI
-const ADMIN_WA_DISPLAY = "0812-3456-7890"; // <-- GANTI TEKS NOMOR
-const DEFAULT_WA_TEXT =
-    "Assalamu’alaikum, saya ingin bertanya tentang Penerimaan Santri Baru (MA) di Pondok Pesantren DARUSSALAM AL-HAFIDZ, Kota Jambi.";
+// Nilai default akan diganti dari meta tag jika tersedia (CMS Home).
+let ADMIN_WA_E164 = "6282173604012";
+let ADMIN_WA_DISPLAY = "0821-7360-4012";
+let DEFAULT_WA_TEXT =
+    "Assalamu’alaikum, saya ingin bertanya tentang Penerimaan Santri Baru (MTs & MA) di Pondok Pesantren DARUSSALAM AL-HAFIDZ, Kenali Asam Atas - Kota Jambi.";
+
+const metaWaDisplay = document.querySelector('meta[name="wa-number-display"]');
+const metaWaE164 = document.querySelector('meta[name="wa-number-e164"]');
+const metaWaText = document.querySelector('meta[name="wa-default-text"]');
+
+if (metaWaDisplay && metaWaDisplay.content) {
+    ADMIN_WA_DISPLAY = metaWaDisplay.content;
+}
+if (metaWaE164 && metaWaE164.content) {
+    ADMIN_WA_E164 = metaWaE164.content;
+}
+if (metaWaText && metaWaText.content) {
+    DEFAULT_WA_TEXT = metaWaText.content;
+}
 
 // Helper to build wa.me link
 function buildWaLink(text = DEFAULT_WA_TEXT) {

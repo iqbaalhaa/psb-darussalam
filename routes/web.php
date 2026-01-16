@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\HomeSettingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistrationController;
@@ -106,6 +107,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/laporan', [\App\Http\Controllers\LaporanController::class, 'index'])->name('admin.laporan.index');
     Route::get('/admin/laporan/print', [\App\Http\Controllers\LaporanController::class, 'print'])->name('admin.laporan.print');
+
+    // Home CMS
+    Route::get('/admin/home-settings', [HomeSettingController::class, 'edit'])->name('admin.home-settings.edit');
+    Route::put('/admin/home-settings', [HomeSettingController::class, 'update'])->name('admin.home-settings.update');
 
     // Route Akun Management
     Route::get('/admin/akun', [\App\Http\Controllers\AccountController::class, 'index'])->name('admin.akun.index');
