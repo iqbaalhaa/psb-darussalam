@@ -35,8 +35,8 @@
                 <option value="incomplete_file" {{ request('status') == 'incomplete_file' ? 'selected' : '' }}>Berkas Belum
                     Lengkap
                 </option>
-                <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
-                <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                <option value="accept" {{ request('status') == 'accept' ? 'selected' : '' }}>Diterima</option>
+                <option value="reject" {{ request('status') == 'reject' ? 'selected' : '' }}>Ditolak</option>
             </select>
             <button class="btn-save" id="btn-export-modal" style="height: 42px; padding: 0 20px;">
                 <i class="fa-solid fa-file-export"></i> Export
@@ -56,6 +56,7 @@
                         <th class="w-15">Jenjang</th>
                         <th class="w-20">Kontak</th>
                         <th class="w-15">Status</th>
+                        <th class="w-15" style="display: none">check</th>
                         <th class="w-20 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -82,17 +83,40 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="status-badge {{ $item->status }}">
+
+                                @if ($item->status == 'pending')
+                                    <span class="status-badge pending ">
+                                        Pending
+                                    </span>
+                                @elseif ($item->status == 'incomplete_file')
+                                    <span class="status-badge incomplete_file ">
+                                        Berkas Belum Lengkap
+                                    </span>
+                                @elseif ($item->status == 'accept')
+                                    <span class="status-badge diterima ">
+                                        Diterima
+                                    </span>
+                                @else
+                                    <span class="status-badge ditolak ">
+                                        Ditolak
+                                    </span>
+                                @endif
+
+
+                                {{-- <span class="status-badge {{ $item->status }}">
                                     @if ($item->status == 'pending')
                                         <i class="fa-solid fa-clock mr-1"></i>
-                                    @elseif($item->status == 'diterima')
+                                    @elseif($item->status == 'accept')
+                                        <i class="fa-solid fa-check-circle mr-1"></i>
+                                    @elseif ($item->status == 'reject')
                                         <i class="fa-solid fa-check-circle mr-1"></i>
                                     @else
                                         <i class="fa-solid fa-times-circle mr-1"></i>
                                     @endif
                                     {{ ucfirst($item->status) }}
-                                </span>
+                                </span> --}}
                             </td>
+                            <td style="display: none">{{ $item->status }}</td>
                             <td>
                                 <div class="action-btn-group">
                                     <button class="action-btn view btn-detail"
@@ -100,8 +124,8 @@
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
 
-                                    <a href="{{ url('admin/detail-pendaftar/' . $item->id) }}" class="action-btn btn-purple-light"
-                                        title="Cek Lengkap">
+                                    <a href="{{ url('admin/detail-pendaftar/' . $item->id) }}"
+                                        class="action-btn btn-purple-light" title="Cek Lengkap">
                                         <i class="fa-solid fa-file-lines"></i>
                                     </a>
 
@@ -157,10 +181,10 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Tahun Ajaran</label>
-                 <select name="tahun_ajaran" class="form-select">
+                <select name="tahun_ajaran" class="form-select">
                     <option value="">Semua Tahun</option>
-                    @foreach($tahunAjarans as $tahun)
-                         <option value="{{ $tahun->nama }}">{{ $tahun->nama }}</option>
+                    @foreach ($tahunAjarans as $tahun)
+                        <option value="{{ $tahun->nama }}">{{ $tahun->nama }}</option>
                     @endforeach
                 </select>
             </div>
@@ -208,9 +232,9 @@
 
                     var val = this.value;
                     if (val) {
-                        table.column(5).search(val).draw();
+                        table.column(6).search(val).draw();
                     } else {
-                        table.column(5).search('').draw();
+                        table.column(6).search('').draw();
                     }
                 });
 
@@ -218,7 +242,7 @@
                 $('#btn-export-modal').on('click', function() {
                     var content = $('#export-form-template').html();
                     openModal("Export Data Pendaftar", content);
-                    
+
                     // Re-attach close handlers
                     document.querySelectorAll("[data-close-modal]").forEach(btn => {
                         btn.addEventListener("click", closeModal);

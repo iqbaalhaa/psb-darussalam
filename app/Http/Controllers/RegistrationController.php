@@ -29,6 +29,7 @@ class RegistrationController extends Controller
             'jenjang' => 'required|string|max:50',
             'email' => 'required|email|max:255|unique:users,email',
             'wa' => 'required|string|max:20',
+            'tahun_ajaran' => 'required',
             'password' => 'required|string|min:8',
         ]);
 
@@ -55,6 +56,7 @@ class RegistrationController extends Controller
             'jenjang' => $request->jenjang,
             'email' => $request->email,
             'wa' => $request->wa,
+            'tahun_ajaran' => $request->tahun_ajaran,
             'status' => 'pending'
         ]);
 
@@ -81,7 +83,7 @@ class RegistrationController extends Controller
     {
         $pendaftar = Registration::findOrFail($id);
         $request->validate([
-            'status' => 'required|in:pending,diterima,ditolak',
+            'status' => 'required|in:pending,incomplete_file,reject,accept',
         ]);
 
         $pendaftar->update([

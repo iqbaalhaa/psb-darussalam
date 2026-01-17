@@ -80,7 +80,8 @@
                         $homeSetting = \App\Models\HomeSetting::first();
                     @endphp
                     <h1>
-                        {{ $homeSetting->hero_title ?? 'Menerima Santri Baru ' }}<span class="accent">MTs &amp; MA</span>
+                        {{ $homeSetting->hero_title ?? 'Menerima Santri Baru ' }}<span class="accent">MTs &amp;
+                            MA</span>
                     </h1>
 
                     <p class="lead">
@@ -97,7 +98,8 @@
                             <a class="btn btn--outline" href="{{ $homeSetting->brochure_url }}" target="_blank"
                                 rel="noopener">Lihat Brosur Lengkap</a>
                         @else
-                            <a class="btn btn--outline" href="#" target="_blank" rel="noopener">Lihat Brosur Lengkap</a>
+                            <a class="btn btn--outline" href="#" target="_blank" rel="noopener">Lihat Brosur
+                                Lengkap</a>
                         @endif
                     </div>
 
@@ -120,10 +122,8 @@
                             $homeSetting = $homeSetting ?? \App\Models\HomeSetting::first();
                         @endphp
                         <div class="mediaCard__image" role="img" aria-label="Foto santri belajar dan tahfidz"
-                            @if ($homeSetting && $homeSetting->hero_image_path)
-                                style="background-image: url('{{ asset($homeSetting->hero_image_path) }}'); background-size: cover; background-position: center;"
-                            @endif
-                        ></div>
+                            @if ($homeSetting && $homeSetting->hero_image_path) style="background-image: url('{{ asset($homeSetting->hero_image_path) }}'); background-size: cover; background-position: center;" @endif>
+                        </div>
                         <div class="mediaCard__caption">
                             <div class="mediaCard__captionTitle">Lingkungan belajar yang tertib & hangat</div>
                             <div class="mediaCard__captionText">Foto asli kegiatan • DARUSSALAM AL-HAFIDZ</div>
@@ -389,12 +389,26 @@
 
                 @php
                     $homeSetting = $homeSetting ?? \App\Models\HomeSetting::first();
-                    $formalItems = $homeSetting && $homeSetting->biaya_formal_items
-                        ? preg_split('/\r\n|\r|\n/', $homeSetting->biaya_formal_items)
-                        : ['Pendaftaran.', 'Uang makan (maṣlahah bulanan).', 'Seragam (3 set gamis).', 'Perlengkapan asrama dan belajar.', 'Pos-pos lain sesuai kebijakan pesantren.'];
-                    $nonformalItems = $homeSetting && $homeSetting->biaya_nonformal_items
-                        ? preg_split('/\r\n|\r|\n/', $homeSetting->biaya_nonformal_items)
-                        : ['Pendaftaran.', 'Uang makan (maṣlahah bulanan).', 'Seragam.', 'Perlengkapan asrama dan belajar.', 'Pos-pos lain sesuai kebijakan pesantren.'];
+                    $formalItems =
+                        $homeSetting && $homeSetting->biaya_formal_items
+                            ? preg_split('/\r\n|\r|\n/', $homeSetting->biaya_formal_items)
+                            : [
+                                'Pendaftaran.',
+                                'Uang makan (maṣlahah bulanan).',
+                                'Seragam (3 set gamis).',
+                                'Perlengkapan asrama dan belajar.',
+                                'Pos-pos lain sesuai kebijakan pesantren.',
+                            ];
+                    $nonformalItems =
+                        $homeSetting && $homeSetting->biaya_nonformal_items
+                            ? preg_split('/\r\n|\r|\n/', $homeSetting->biaya_nonformal_items)
+                            : [
+                                'Pendaftaran.',
+                                'Uang makan (maṣlahah bulanan).',
+                                'Seragam.',
+                                'Perlengkapan asrama dan belajar.',
+                                'Pos-pos lain sesuai kebijakan pesantren.',
+                            ];
                 @endphp
 
                 <div class="grid grid--2">
@@ -475,7 +489,8 @@
                             <li>Surat keterangan sehat dari dokter/puskesmas (bila diperlukan).</li>
                         </ul>
                         <div class="card__actions">
-                            <a class="btn btn--outline" href="#" target="_blank" rel="noopener">Unduh brosur / syarat
+                            <a class="btn btn--outline" href="#" target="_blank" rel="noopener">Unduh brosur /
+                                syarat
                                 lengkap</a>
                         </div>
                     </div>
@@ -565,6 +580,9 @@
 
                 <div class="formWrap">
                     <form class="form card" id="psbForm" novalidate>
+
+                        <input type="hidden" name="tahun_ajaran" value="{{ $tahunAktif->nama ?? date('Y') }}">
+
                         <div class="form__row">
                             <label class="field">
                                 <span class="field__label">Nama Calon Santri</span>
@@ -578,6 +596,7 @@
                                 <select class="field__input" name="jenjang" required>
                                     <option value="MTS" selected>MTS</option>
                                     <option value="MA">MA</option>
+                                    <option value="MI">MI</option>
                                 </select>
                                 <span class="field__hint">Jenjang yang dibuka: MA</span>
                             </label>

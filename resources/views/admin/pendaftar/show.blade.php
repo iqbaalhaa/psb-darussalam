@@ -28,11 +28,24 @@
                 <tr>
                     <td style="padding: 8px 0; color: var(--muted);">Status Saat Ini</td>
                     <td style="padding: 8px 0;">
-                        <span
-                            class="badge {{ $pendaftar->status == 'pending' ? 'warning' : ($pendaftar->status == 'diterima' ? 'success' : 'danger') }}"
-                            style="padding: 4px 8px; border-radius: 4px; font-size: 12px; background: rgba(var(--bg-rgb), 0.1); border: 1px solid currentColor;">
-                            {{ ucfirst($pendaftar->status) }}
-                        </span>
+                        @if ($pendaftar->status == 'pending')
+                            <span class="status-badge pending ">
+                                Pending
+                            </span>
+                        @elseif ($pendaftar->status == 'incomplete_file')
+                            <span class="status-badge incomplete_file ">
+                                Berkas Belum Lengkap
+                            </span>
+                        @elseif ($pendaftar->status == 'accept')
+                            <span class="status-badge diterima ">
+                                Diterima
+                            </span>
+                        @else
+                            <span class="status-badge ditolak ">
+                                Ditolak
+                            </span>
+                        @endif
+
                     </td>
                 </tr>
             </table>
@@ -55,9 +68,9 @@
                         <option value="pending" {{ $pendaftar->status == 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="incomplete_file" {{ $pendaftar->status == 'incomplete_file' ? 'selected' : '' }}>
                             Berkas Belum Lengkap</option>
-                        <option value="diterima" {{ $pendaftar->status == 'diterima' ? 'selected' : '' }}>Diterima
+                        <option value="accept" {{ $pendaftar->status == 'accept' ? 'selected' : '' }}>Diterima
                         </option>
-                        <option value="ditolak" {{ $pendaftar->status == 'ditolak' ? 'selected' : '' }}>Ditolak
+                        <option value="reject" {{ $pendaftar->status == 'reject' ? 'selected' : '' }}>Ditolak
                         </option>
                     </select>
                 </div>

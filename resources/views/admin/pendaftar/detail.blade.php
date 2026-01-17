@@ -26,12 +26,12 @@
                             Berkas Belum Lengkap
                         </label>
                         <label class="radio-item">
-                            <input type="radio" name="status" value="ditolak"
+                            <input type="radio" name="status" value="reject"
                                 {{ $data->status == 'reject' ? 'checked' : '' }}>
                             Tolak
                         </label>
                         <label class="radio-item">
-                            <input type="radio" name="status" value="diterima"
+                            <input type="radio" name="status" value="accept"
                                 {{ $data->status == 'accept' ? 'checked' : '' }}>
                             Terima
                         </label>
@@ -118,9 +118,12 @@
 
             <div class="profile-actions">
                 <button id="btnOpenStatus" class="btn-action btn-update">
-                    <i class="fa-solid fa-pen-to-square"></i> Update Status
+                    <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                @php
+                <button id="btnOpenStatusPembayaran" class="btn-action btn-update">
+                    <i class="fa-solid fa-money-bill"></i>
+                </button>
+                {{-- @php
                     $statusClass = match ($data->status) {
                         'pending' => 'status-pending',
                         'incomplete_file' => 'status-incomplete',
@@ -142,10 +145,28 @@
                         'diterima' => 'fa-circle-check',
                         default => 'fa-clock',
                     };
-                @endphp
-                <div class="status-badge {{ $statusClass }}">
+                @endphp --}}
+                {{-- <div class="status-badge {{ $statusClass }}">
                     <i class="fa-solid {{ $statusIcon }}"></i> {{ $statusLabel }}
-                </div>
+                </div> --}}
+
+                @if ($data->status == 'pending')
+                    <span class="status-badge pending ">
+                        Pending
+                    </span>
+                @elseif ($data->status == 'incomplete_file')
+                    <span class="status-badge incomplete_file ">
+                        Berkas Belum Lengkap
+                    </span>
+                @elseif ($data->status == 'accept')
+                    <span class="status-badge diterima ">
+                        Diterima
+                    </span>
+                @else
+                    <span class="status-badge ditolak ">
+                        Ditolak
+                    </span>
+                @endif
             </div>
         </div>
 
@@ -518,6 +539,13 @@
                     $('body').css('overflow', 'hidden');
                 });
 
+                const modalPembayaran = $('#modalStatusPembayaran');
+                $('#btnOpenStatusPembayaran').on('click', function() {
+                    modalPembayaran.css('display', 'flex').hide().fadeIn(200);
+                    // Prevent body scroll
+                    $('body').css('overflow', 'hidden');
+                });
+
                 // KODINGAN KETIGA CONFLICT (KODINGAN AKU)
                 // END KODINGAN KETIGA CONFLICT (KODINGAN AKU)
 
@@ -547,6 +575,20 @@
                         closeModal();
                     }
                 });
+
+
+
+                function closeModalPembayaran() {
+                    modalPembayaran.fadeOut(200, function() {
+                        $('body').css('overflow', 'auto');
+                    });
+                }
+
+                $('.close-modal-pembayaran').on('click', function(e) {
+                    e.preventDefault(); // Prevent form submission if button inside form
+                    closeModalPembayaran();
+                });
+
             });
         </script>
     @endpush
