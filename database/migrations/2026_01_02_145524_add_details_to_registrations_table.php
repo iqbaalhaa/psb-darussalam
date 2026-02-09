@@ -75,6 +75,7 @@ return new class extends Migration
     {
         Schema::table('registrations', function (Blueprint $table) {
             $table->dropColumn([
+                // 'tahun_ajaran', // Dropped by 2026_01_08_173236_add_tahun_ajaran_to_registrations_table
                 'tempat_lahir',
                 'tanggal_lahir',
                 'jenis_kelamin',
@@ -82,13 +83,41 @@ return new class extends Migration
                 'nik',
                 'alamat',
                 'asal_sekolah',
+                // 'anak_ke', // Dropped by 2026_02_09_133747_add_missing_columns_to_registrations_table
+                // 'jumlah_saudara', // Dropped by 2026_02_09_133747_add_missing_columns_to_registrations_table
+                'no_kk',
                 'nama_ayah',
+                'nik_ayah',
+                'umur_ayah',
+                'tempat_lahir_ayah',
+                'tanggal_lahir_ayah',
+                'pendidikan_terakhir_ayah',
+                'alamat_lengkap_ayah',
+                'pekerjaan_ayah',
+                'no_hp_ayah',
+                'kode_pos',
                 'nama_ibu',
-                'no_hp_wali',
-                'foto',
-                'kk_file',
-                'akte_file',
-                'ijazah_file',
+                'nik_ibu',
+                'umur_ibu',
+                'tempat_lahir_ibu',
+                'tanggal_lahir_ibu',
+                'pendidikan_terakhir_ibu',
+                'alamat_lengkap_ibu',
+                'pekerjaan_ibu',
+                'no_hp_ibu',
+                'file_biodata',
+                'file_rapor',
+                'file_ijazah',
+                'file_skl',
+                'file_akta_kelahiran',
+                'file_kk',
+                'file_pas_foto',
+                'file_ktp_ayah',
+                'file_ktp_ibu',
+                'file_kip',
+                'file_bpjs',
+                'status_pembayaran',
+                // 'keterangan', // Dropped by 2026_01_08_183032_add_keterangan_to_registrations_table
             ]);
         });
     }
