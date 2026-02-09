@@ -1217,8 +1217,25 @@
             const showSummaryModal = (e) => {
                 e.preventDefault();
 
-                // Check validation
-                if (!form.reportValidity()) return;
+                // Manual validation check to handle hidden tabs
+                // This prevents "An invalid form control is not focusable" error
+                const firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid) {
+                    const panel = firstInvalid.closest('.tabs__panel');
+                    if (panel && !panel.classList.contains('is-active')) {
+                        const panelId = panel.id;
+                        const tabBtn = document.querySelector(`.tabs__tab[aria-controls="${panelId}"]`);
+                        if (tabBtn) tabBtn.click();
+                    }
+                    
+                    // Focus the element after a brief delay to ensure tab is visible
+                    setTimeout(() => {
+                        firstInvalid.focus();
+                        form.reportValidity(); 
+                    }, 100);
+                    
+                    return;
+                }
 
                 // Gather data for summary
                 const nisn = document.getElementById("nisn")?.value || "-";
