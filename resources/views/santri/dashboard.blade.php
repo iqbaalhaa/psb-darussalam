@@ -17,7 +17,7 @@
 <style>
     /* modal */
     /* Overlay Modal */
-    .modal-overlay {
+    .modal-overlay, .modal {
         display: none;
         /* Tersembunyi secara default */
         position: fixed;
@@ -28,6 +28,11 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(4px);
+        overflow-y: auto;
+    }
+
+    .modal.is-open {
+        display: block;
     }
 
     /* Kotak Modal */
@@ -149,27 +154,6 @@
                     {{-- opsional: arahkan ke halaman ubah password --}}
 
                     <button id="openModalBtn" class="btn btn--outline dashBtnSm">Ubah Password</button>
-
-                    <div id="passwordModal" class="modal-overlay">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3>Ubah Password</h3>
-                                <span class="close-btn">&times;</span>
-                            </div>
-                            <form id="passwordForm" method="post"
-                                action="{{ url('register/update-password/' . Auth::user()->id) }}">
-                                @csrf
-                                <div class="form-group">
-                                    <label>Password Baru</label>
-                                    <input type="text" maxlength="20" name="password" class="field__input" required>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn--secondary close-btn-alt">Batal</button>
-                                    <button type="submit" class="btn btn--primary">Simpan Perubahan</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
@@ -1093,8 +1077,59 @@
     </div>
 
     <!-- JS kecil untuk pindah tab + nama file (opsional) -->
+    <div id="passwordModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ubah Password</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <form id="passwordForm" method="post" action="{{ route('password.update') }}">
+                @csrf
+                <div class="form-group" style="position: relative;">
+                    <label>Password Baru</label>
+                    <input type="password" maxlength="20" name="password" id="passwordInput" class="field__input" required>
+                    <span id="togglePassword" style="position: absolute; right: 10px; top: 35px; cursor: pointer;">
+                        👁️
+                    </span>
+                </div>
+                <div class="form-group" style="position: relative;">
+                    <label>Konfirmasi Password</label>
+                    <input type="password" maxlength="20" name="password_confirmation" id="passwordConfirmInput" class="field__input" required>
+                    <span id="togglePasswordConfirm" style="position: absolute; right: 10px; top: 35px; cursor: pointer;">
+                        👁️
+                    </span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn--secondary close-btn-alt">Batal</button>
+                    <button type="submit" class="btn btn--primary">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if($registration->status == 'accept')
+    <div id="acceptedModal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header" style="justify-content: center; border-bottom: none;">
+                 <div style="font-size: 50px;">🎉</div>
+            </div>
+            <h3>Selamat!</h3>
+            <p>Assalamu'alaikum, <strong>{{ Auth::user()->name }}</strong></p>
+            <p>Email: {{ Auth::user()->email }}</p>
+            <p>No. Pendaftaran: <strong>REG-{{ str_pad($registration->id, 5, '0', STR_PAD_LEFT) }}</strong></p>
+            <br>
+            <p>Anda dinyatakan <strong>DITERIMA</strong> sebagai santri di</p>
+            <h4>PSB Darussalam</h4>
+            <br>
+            <div class="modal-footer" style="justify-content: center;">
+                <button type="button" class="btn btn--primary close-accepted-btn">Alhamdulillah</button>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener('DOMContentLoaded', () => {
             // 1) Next/Prev tab
             const tabButtons = Array.from(document.querySelectorAll("[data-tabs] .tabs__tab"));
             const panels = Array.from(document.querySelectorAll("[data-tabs] .tabs__panel"));
@@ -1460,6 +1495,47 @@
                 if (event.target == pwdModalContainer) {
                     pwdModalContainer.style.display = 'none';
                 }
+                const acceptedModal = document.getElementById('acceptedModal');
+                if (acceptedModal && event.target == acceptedModal) {
+                    acceptedModal.style.display = 'none';
+                }
+            }
+
+            // Accepted Modal Logic
+            const acceptedModal = document.getElementById('acceptedModal');
+            if (acceptedModal) {
+                // Show automatically
+                acceptedModal.style.display = 'block';
+
+                const closeAcceptedBtn = document.querySelector('.close-accepted-btn');
+                if (closeAcceptedBtn) {
+                    closeAcceptedBtn.onclick = () => {
+                        acceptedModal.style.display = 'none';
+                    };
+                }
+            }
+
+            // Toggle Password Visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('passwordInput');
+
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.textContent = type === 'password' ? '👁️' : '🙈';
+                });
+            }
+
+            const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
+            const passwordConfirmInput = document.getElementById('passwordConfirmInput');
+
+            if (togglePasswordConfirm && passwordConfirmInput) {
+                togglePasswordConfirm.addEventListener('click', function() {
+                    const type = passwordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordConfirmInput.setAttribute('type', type);
+                    this.textContent = type === 'password' ? '👁️' : '🙈';
+                });
             }
 
             // Logika saat form dikirim
@@ -1479,6 +1555,22 @@
             //     pwdModalContainer.style.display = 'none';
             //     pwdFormElement.reset(); // Mengosongkan form setelah sukses
             // };
+
+            // 4) Auto-switch tab on validation error
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('invalid', () => {
+                    // Find the closest tab panel
+                    const panel = input.closest('.tabs__panel');
+                    if (panel && !panel.classList.contains('is-active')) {
+                        // Find the tab button that controls this panel
+                        const panelId = panel.id;
+                        const tabBtn = document.querySelector(`.tabs__tab[aria-controls="${panelId}"]`);
+                        if (tabBtn) {
+                            tabBtn.click(); // Activate the tab
+                        }
+                    }
+                });
+            });
 
         });
     </script>

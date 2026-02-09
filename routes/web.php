@@ -39,10 +39,9 @@ Route::post('/register', [RegistrationController::class, 'store'])->name('regist
 Route::middleware(['auth', 'role:santri'])->group(function () {
     Route::get('/santri/dashboard', [SantriController::class, 'dashboard'])->name('santri.dashboard');
     Route::put('/santri/update', [SantriController::class, 'update'])->name('santri.update');
-    Route::get('/santri/password/change', [SantriController::class, 'showChangePasswordForm'])->name('password.change');
-    // Route::post('/santri/password/update', [SantriController::class, 'changePassword'])->name('password.update');
-    Route::post('register/update-password/{id}', [RegistrationController::class, 'changePassword']);
-
+    // Route::get('/santri/password/change', [SantriController::class, 'showChangePasswordForm'])->name('password.change');
+    Route::post('/santri/password/update', [SantriController::class, 'changePassword'])->name('password.update');
+    // Route::post('register/update-password/{id}', [RegistrationController::class, 'changePassword']);
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -66,6 +65,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     })->name('admin.dashboard');
 
     Route::get('/admin/pendaftar', [RegistrationController::class, 'index'])->name('admin.pendaftar.index');
+    Route::post('/admin/pendaftar/mass-update', [RegistrationController::class, 'massUpdate'])->name('admin.pendaftar.massUpdate');
     Route::get('/admin/pendaftar/{id}', [RegistrationController::class, 'show'])->name('admin.pendaftar.show');
     Route::put('/admin/pendaftar/{id}', [RegistrationController::class, 'update'])->name('admin.pendaftar.update');
     Route::delete('/admin/pendaftar/{id}', [RegistrationController::class, 'destroy'])->name('admin.pendaftar.destroy');

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Registration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 // use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 
@@ -16,8 +18,23 @@ class SantriController extends Controller
         return view('santri.dashboard', compact('registration'));
     }
 
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return redirect()->back()->with('success', 'Password berhasil diubah.');
+    }
+
     public function update(Request $request)
     {
+        Log::info('Update Biodata Santri Request:', $request->all());
+
         $request->validate([
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|date',
@@ -28,19 +45,7 @@ class SantriController extends Controller
             'asal_sekolah' => 'required|string',
             'anak_ke' => 'required|numeric',
             'jumlah_saudara' => 'required|numeric',
-            
-            // ========================================= 
-
-            // 'nama_ayah' => 'required|string',
-            // 'nama_ibu' => 'required|string',
-            // 'no_hp_wali' => 'required|string',  
-            // 'foto' => 'nullable|image|max:2048',
-            // 'kk_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            // 'akte_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            // 'ijazah_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-
-            // Data Orang Tua 
-            // Data Ayah
+        
             'no_kk' => 'required|string', 
             'nama_ayah' => 'required|string',
             'nik_ayah' => 'required|string',
@@ -109,7 +114,7 @@ class SantriController extends Controller
 
             $renameBio = uniqid() . '_' . $fileBio->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_biodata);
+            if ($registration->file_biodata) File::delete('Berkas/' . $registration->file_biodata);
 
             $fileBio->move('Berkas', $renameBio);
             
@@ -122,7 +127,7 @@ class SantriController extends Controller
 
             $renameRapor = uniqid() . '_' . $fileRapor->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_rapor);
+            if ($registration->file_rapor) File::delete('Berkas/' . $registration->file_rapor);
 
             $fileRapor->move('Berkas', $renameRapor);
 
@@ -135,7 +140,7 @@ class SantriController extends Controller
 
             $renameIjazah = uniqid() . '_' . $fileIjazah->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_ijazah);
+            if ($registration->file_ijazah) File::delete('Berkas/' . $registration->file_ijazah);
 
             $fileIjazah->move('Berkas', $renameIjazah);
 
@@ -148,7 +153,7 @@ class SantriController extends Controller
 
             $renameSkl = uniqid() . '_' . $fileSkl->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_skl);
+            if ($registration->file_skl) File::delete('Berkas/' . $registration->file_skl);
 
             $fileSkl->move('Berkas', $renameSkl);
 
@@ -161,7 +166,7 @@ class SantriController extends Controller
 
             $renameAkta = uniqid() . '_' . $fileAkta->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_akta_kelahiran);
+            if ($registration->file_akta_kelahiran) File::delete('Berkas/' . $registration->file_akta_kelahiran);
 
             $fileAkta->move('Berkas', $renameAkta);
 
@@ -174,7 +179,7 @@ class SantriController extends Controller
 
             $renameKK = uniqid() . '_' . $fileKK->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_kk);
+            if ($registration->file_kk) File::delete('Berkas/' . $registration->file_kk);
 
             $fileKK->move('Berkas', $renameKK);
 
@@ -188,7 +193,7 @@ class SantriController extends Controller
 
             $renamePasFoto = uniqid() . '_' . $filePasFoto->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_pas_foto);
+            if ($registration->file_pas_foto) File::delete('Berkas/' . $registration->file_pas_foto);
 
             $filePasFoto->move('Berkas', $renamePasFoto);
 
@@ -201,7 +206,7 @@ class SantriController extends Controller
 
             $renameKtpAyah = uniqid() . '_' . $fileKtpAyah->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_ktp_ayah);
+            if ($registration->file_ktp_ayah) File::delete('Berkas/' . $registration->file_ktp_ayah);
 
             $fileKtpAyah->move('Berkas', $renameKtpAyah);
 
@@ -214,7 +219,7 @@ class SantriController extends Controller
 
             $renameKtpIbu = uniqid() . '_' . $fileKtpIbu->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_ktp_ibu);
+            if ($registration->file_ktp_ibu) File::delete('Berkas/' . $registration->file_ktp_ibu);
 
             $fileKtpIbu->move('Berkas', $renameKtpIbu);
 
@@ -227,7 +232,7 @@ class SantriController extends Controller
 
             $renameKip = uniqid() . '_' . $fileKip->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_kip);
+            if ($registration->file_kip) File::delete('Berkas/' . $registration->file_kip);
 
             $fileKip->move('Berkas', $renameKip);
 
@@ -238,13 +243,13 @@ class SantriController extends Controller
 
             $fileBpjs = $request->file('file_bpjs');
 
-            $renameKip = uniqid() . '_' . $fileBpjs->getClientOriginalName();
+            $renameBpjs = uniqid() . '_' . $fileBpjs->getClientOriginalName();
 
-            if ($registration->foto) File::delete('Berkas/' . $registration->file_bpjs);
+            if ($registration->file_bpjs) File::delete('Berkas/' . $registration->file_bpjs);
 
-            $fileBpjs->move('Berkas', $renameKip);
+            $fileBpjs->move('Berkas', $renameBpjs);
 
-            $data['file_bpjs'] = $renameKip; 
+            $data['file_bpjs'] = $renameBpjs; 
         }
 
         // if ($request->hasFile('kk_file')) {

@@ -23,8 +23,6 @@
         <div class="filter-group">
             <select id="filter-jenjang" class="form-select">
                 <option value="">Semua Jenjang</option>
-                {{-- <option value="MTS" {{ request('jenjang') == 'MTS' ? 'selected' : '' }}>MTS</option>
-                <option value="MA" {{ request('jenjang') == 'MA' ? 'selected' : '' }}>MA</option> --}}
                 <option value="MTS" {{ request('jenjang') == 'MTS' ? 'selected' : '' }}>MTS</option>
                 <option value="MA" {{ request('jenjang') == 'MA' ? 'selected' : '' }}>MA</option>
                 <option value="MI" {{ request('jenjang') == 'MI' ? 'selected' : '' }}>MI</option>
@@ -38,6 +36,22 @@
                 <option value="accept" {{ request('status') == 'accept' ? 'selected' : '' }}>Diterima</option>
                 <option value="reject" {{ request('status') == 'reject' ? 'selected' : '' }}>Ditolak</option>
             </select>
+            
+            <!-- Mass Action -->
+            <div id="mass-action-container" style="display: none; align-items: center; gap: 10px; margin-left: 10px; border-left: 1px solid #ddd; padding-left: 10px;">
+                <select id="mass-action-select" class="form-select" style="width: 150px;">
+                    <option value="">-- Aksi --</option>
+                    <option value="accept">Set Diterima</option>
+                    <option value="reject">Set Ditolak</option>
+                    <option value="incomplete_file">Set Berkas Kurang</option>
+                    <option value="pending">Set Pending</option>
+                    <option value="delete">Hapus Data</option>
+                </select>
+                <button class="btn-save" id="btn-mass-action" style="height: 42px; padding: 0 15px; background: #6366f1;">
+                    <i class="fa-solid fa-check-double"></i> Terapkan
+                </button>
+            </div>
+
             <button class="btn-save" id="btn-export-modal" style="height: 42px; padding: 0 20px;">
                 <i class="fa-solid fa-file-export"></i> Export
             </button>
@@ -50,19 +64,25 @@
             <table class="table" id="table-pendaftar">
                 <thead>
                     <tr>
+                        <th class="w-5 text-center">
+                            <input type="checkbox" id="check-all">
+                        </th>
                         <th class="w-5">No</th>
                         <th class="w-25">Nama Lengkap</th>
                         <th class="w-15">Tahun Ajaran</th>
                         <th class="w-15">Jenjang</th>
                         <th class="w-20">Kontak</th>
                         <th class="w-15">Status</th>
-                        <th class="w-15" style="display: none">check</th>
+                        <th class="w-15" style="display: none">status_filter</th>
                         <th class="w-20 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($pendaftar as $item)
                         <tr>
+                            <td class="text-center">
+                                <input type="checkbox" class="check-item" value="{{ $item->id }}">
+                            </td>
                             <td>{{ $loop->iteration }}</td>
                             <td>
                                 <div class="flex-column">
@@ -211,7 +231,7 @@
                     "columnDefs": [{
                         "searchable": false,
                         "orderable": false,
-                        "targets": [0, 5]
+                        "targets": [0, 1, 8] // Checkbox, No, Aksi
                     }],
                     "dom": 'rtip',
                     "pageLength": 10
@@ -224,18 +244,99 @@
 
                 // Custom Filter Jenjang
                 $('#filter-jenjang').on('change', function() {
-                    table.column(3).search(this.value).draw();
+                    table.column(4).search(this.value).draw();
                 });
 
                 // Custom Filter Status
                 $('#filter-status').on('change', function() {
-
                     var val = this.value;
                     if (val) {
-                        table.column(6).search(val).draw();
+                        table.column(7).search(val).draw();
                     } else {
-                        table.column(6).search('').draw();
+                        table.column(7).search('').draw();
                     }
+                });
+
+                // --- Checkbox & Mass Action Logic ---
+                // Checkbox All
+                $('#check-all').on('change', function() {
+                    var isChecked = $(this).is(':checked');
+                    $('.check-item').prop('checked', isChecked);
+                    toggleMassAction();
+                });
+
+                // Individual Checkbox
+                $('#table-pendaftar').on('change', '.check-item', function() {
+                    var total = $('.check-item').length;
+                    var checked = $('.check-item:checked').length;
+                    $('#check-all').prop('checked', total === checked);
+                    toggleMassAction();
+                });
+
+                function toggleMassAction() {
+                    var checkedCount = $('.check-item:checked').length;
+                    if (checkedCount > 0) {
+                        $('#mass-action-container').css('display', 'flex');
+                    } else {
+                        $('#mass-action-container').hide();
+                    }
+                }
+
+                // Mass Action Execute
+                $('#btn-mass-action').on('click', function() {
+                    var action = $('#mass-action-select').val();
+                    if (!action) {
+                        Swal.fire('Peringatan', 'Silakan pilih aksi terlebih dahulu.', 'warning');
+                        return;
+                    }
+
+                    var selectedIds = [];
+                    $('.check-item:checked').each(function() {
+                        selectedIds.push($(this).val());
+                    });
+
+                    if (selectedIds.length === 0) return;
+
+                    Swal.fire({
+                        title: 'Konfirmasi Aksi Massal',
+                        text: `Anda yakin ingin melakukan aksi ini pada ${selectedIds.length} data terpilih?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#6366f1',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: 'Ya, Lakukan!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: "{{ route('admin.pendaftar.massUpdate') }}",
+                                method: 'POST',
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    ids: selectedIds,
+                                    action: action
+                                },
+                                beforeSend: function() {
+                                    $('#btn-mass-action').prop('disabled', true).html('<i class="fa-solid fa-circle-notch fa-spin"></i>');
+                                },
+                                success: function(response) {
+                                    Swal.fire('Berhasil', response.message, 'success').then(() => {
+                                        location.reload();
+                                    });
+                                },
+                                error: function(xhr) {
+                                    Swal.fire('Gagal', 'Terjadi kesalahan: ' + (xhr.responseJSON?.message || 'Server Error'), 'error');
+                                    $('#btn-mass-action').prop('disabled', false).html('<i class="fa-solid fa-check-double"></i> Terapkan');
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // Reset Checkbox on Page Change
+                table.on('draw', function() {
+                    $('#check-all').prop('checked', false);
+                    toggleMassAction();
                 });
 
                 // --- Export Modal ---

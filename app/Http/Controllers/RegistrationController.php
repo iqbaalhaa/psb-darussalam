@@ -97,6 +97,41 @@ class RegistrationController extends Controller
         ]);
     }
 
+    public function massUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:registrations,id',
+            'action' => 'required|string',
+        ]);
+
+        $ids = $request->ids;
+        $action = $request->action;
+        $message = '';
+
+        if ($action == 'delete') {
+            $registrations = Registration::whereIn('id', $ids)->get();
+            foreach ($registrations as $reg) {
+                $userId = $reg->user_id;
+                $reg->delete();
+                if ($userId) {
+                    User::where('id', $userId)->delete();
+                }
+            }
+            $message = 'Data pendaftar terpilih berhasil dihapus!';
+        } elseif (in_array($action, ['pending', 'accept', 'reject', 'incomplete_file'])) {
+             Registration::whereIn('id', $ids)->update(['status' => $action]);
+             $message = 'Status pendaftar terpilih berhasil diperbarui!';
+        } else {
+             return response()->json(['status' => 'error', 'message' => 'Aksi tidak valid.'], 400);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $message
+        ]);
+    }
+
     public function destroy($id)
     {
         $pendaftar = Registration::findOrFail($id);

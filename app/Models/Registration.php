@@ -14,7 +14,7 @@ class Registration extends Model
         'tahun_ajaran',
         'nama',
         'jenjang',
-        // 'email',
+        'email',
         'wa',
         'status',
         'is_locked',
