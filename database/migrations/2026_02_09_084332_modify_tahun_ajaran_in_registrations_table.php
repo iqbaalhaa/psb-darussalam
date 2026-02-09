@@ -20,7 +20,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Convert back to YEAR, but be aware that data might be lost/truncated if it's not a valid year
-        DB::statement("ALTER TABLE registrations MODIFY COLUMN tahun_ajaran YEAR NULL DEFAULT NULL");
+        // We cannot convert back to YEAR because the data might be in "YYYY/YYYY" format (e.g. 2025/2026)
+        // which causes data truncation errors. 
+        // We leave it as VARCHAR or just let the previous migration drop the column if it's being rolled back further.
+        // DB::statement("ALTER TABLE registrations MODIFY COLUMN tahun_ajaran YEAR NULL DEFAULT NULL");
+        
+        // Use VARCHAR to be safe during rollback
+        DB::statement("ALTER TABLE registrations MODIFY COLUMN tahun_ajaran VARCHAR(20) NULL DEFAULT NULL");
     }
 };

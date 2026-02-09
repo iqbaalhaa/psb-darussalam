@@ -62,7 +62,7 @@ return new class extends Migration
             $table->string('file_kip')->nullable();
             $table->string('file_bpjs')->nullable();
 
-            $table->string('status')->default('pending'); // pending, accepted, rejected
+            // $table->string('status')->default('pending'); // pending, accepted, rejected
             $table->string('status_pembayaran')->default('belum_lunas');
             $table->string('keterangan')->nullable();
         });
