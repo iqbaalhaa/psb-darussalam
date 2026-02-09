@@ -271,8 +271,8 @@
                 </div>
             </div>
 
-            <form class="dashForm" action="{{ route('santri.update') }}" method="POST"
-                enctype="multipart/form-data">
+            <form id="form-pendaftaran" class="dashForm" action="{{ route('santri.update') }}" method="POST"
+                enctype="multipart/form-data" novalidate>
                 @csrf
                 @method('PUT')
                 <!-- Tabs / Steps -->
@@ -1017,7 +1017,7 @@
                                 <div class="dashPanelActions dashPanelActions--between">
                                     <button type="button" class="btn btn--outline" data-prev-tab="tab-wali">←
                                         Kembali</button>
-                                    <button type="submit" class="btn btn--primary dashBtnSave">
+                                    <button type="button" class="btn btn--primary dashBtnSave">
                                         Simpan & Perbarui Data
                                     </button>
                                 </div>
