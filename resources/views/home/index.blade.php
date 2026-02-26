@@ -133,51 +133,46 @@
             </div>
         </section>
 
-        <!-- Why -->
-        <section class="section">
-            <div class="container">
-                <div class="section__head">
-                    <h2>Mengapa memilih <span class="accent">DARUSSALAM AL-HAFIDZ</span>?</h2>
-                    <p class="muted">Fokus pada pembinaan karakter, tahfidz, dan pendampingan belajar yang konsisten.
-                    </p>
-                </div>
-
-                <div class="grid grid--bento">
-                    <article class="card">
-                        <h3>Pembinaan Adab & Ibadah</h3>
-                        <p class="muted">Tertib ibadah, kedisiplinan, dan adab harian dibina secara berkelanjutan.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Tahfidz Bertahap</h3>
-                        <p class="muted">Halaqah sesuai kemampuan, setoran dan murajaah terukur.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Bimbingan Akademik MA</h3>
-                        <p class="muted">Pendampingan mapel inti dan kebiasaan belajar mandiri untuk jenjang MA.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Lingkungan Aman & Tertib</h3>
-                        <p class="muted">Pengasuhan intensif, aturan jelas, dan budaya saling menjaga.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Pengembangan Diri</h3>
-                        <p class="muted">Bahasa, kepemimpinan, public speaking, olahraga/ekskul.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Komunikasi Wali Santri</h3>
-                        <p class="muted">Laporan rutin dan kanal konsultasi untuk wali santri.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
         <!-- Program -->
         <section class="section section--soft" id="program">
             <div class="container">
                 <div class="section__head">
-                    <h2>Visi, Misi &amp; Program Unggulan</h2>
-                    <p class="muted">Ringkasan visi, misi, dan program unggulan MTs &amp; MA Pondok Pesantren
-                        DARUSSALAM AL-HAFIDZ.</p>
+                    @php
+                        $homeSetting = $homeSetting ?? \App\Models\HomeSetting::first();
+                        $tabs = $homeSetting && $homeSetting->program_tabs ? $homeSetting->program_tabs : null;
+                        $defaultTabs = [
+                            'visi' => [
+                                'visi_madrasah' => 'Membentuk generasi muslim yang berilmu, berakhlakul karimah, berdisiplin, dan bertakwa kepada Allah Subhanahu wa Ta’ala.',
+                                'arah_pendidikan' => 'Menjadikan MTs & MA Darussalam Al Hafidz sebagai lembaga pendidikan berkualitas yang memadukan ilmu umum dan keislaman dalam suasana pesantren.',
+                            ],
+                            'misi' => [
+                                'misi_items' => [
+                                    'Menyelenggarakan pendidikan yang berlandaskan Al-Qur’an dan As-Sunnah.',
+                                    'Menanamkan akhlakul karimah dan kedisiplinan dalam kehidupan santri.',
+                                    'Mengembangkan kemampuan akademik, tahfidz, dan keterampilan santri.',
+                                    'Membiasakan suasana belajar yang islami, tertib, dan penuh kasih sayang.',
+                                ],
+                                'target_lulusan' => 'Lulusan diharapkan menjadi generasi yang berakidah lurus, mampu membaca dan menghafal Al-Qur’an dengan baik, serta siap melanjutkan pendidikan ke jenjang yang lebih tinggi.',
+                            ],
+                            'unggulan' => [
+                                'program_unggulan_items' => [
+                                    'Program Tahfidzul Qur’an.',
+                                    'Program Madrasah Diniyah.',
+                                    'Program penguatan bahasa Arab dan Inggris.',
+                                    'Program pembinaan akhlak dan kedisiplinan santri.',
+                                    'Program pengembangan minat bakat dan keterampilan.',
+                                ],
+                                'kegiatan_penunjang_items' => [
+                                    'Kegiatan keagamaan dan peringatan hari besar Islam.',
+                                    'Latihan kepemimpinan, organisasi, dan kedisiplinan.',
+                                    'Olahraga, seni, dan keterampilan lain yang bermanfaat.',
+                                ],
+                            ],
+                        ];
+                        $tabs = $tabs ?: $defaultTabs;
+                    @endphp
+                    <h2>{{ $homeSetting->program_title ?? 'Visi, Misi & Program Unggulan' }}</h2>
+                    <p class="muted">{{ $homeSetting->program_subtitle ?? 'Ringkasan visi, misi, dan program unggulan MTs & MA Pondok Pesantren DARUSSALAM AL-HAFIDZ.' }}</p>
                 </div>
 
                 <div class="tabs" data-tabs>
@@ -188,8 +183,6 @@
                             id="misi">Misi</button>
                         <button class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-unggulan"
                             id="unggulan">Program Unggulan</button>
-                        <button class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-kami"
-                            id="kami">Inilah Kami</button>
                     </div>
 
                     <div class="tabs__panels">
@@ -197,14 +190,11 @@
                             <div class="panelGrid">
                                 <div class="card">
                                     <h3>Visi Madrasah</h3>
-                                    <p class="muted">Membentuk generasi muslim yang berilmu, berakhlakul karimah,
-                                        berdisiplin, dan bertakwa kepada Allah Subhanahu wa Ta’ala.</p>
+                                    <p class="muted">{{ $tabs['visi']['visi_madrasah'] ?? '' }}</p>
                                 </div>
                                 <div class="card">
                                     <h3>Arah Pendidikan</h3>
-                                    <p class="muted">Menjadikan MTs &amp; MA Darussalam Al Hafidz sebagai lembaga
-                                        pendidikan berkualitas yang memadukan ilmu umum dan keislaman dalam suasana
-                                        pesantren.</p>
+                                    <p class="muted">{{ $tabs['visi']['arah_pendidikan'] ?? '' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -214,18 +204,16 @@
                                 <div class="card">
                                     <h3>Misi Madrasah</h3>
                                     <ul class="list">
-                                        <li>Menyelenggarakan pendidikan yang berlandaskan Al-Qur’an dan As-Sunnah.</li>
-                                        <li>Menanamkan akhlakul karimah dan kedisiplinan dalam kehidupan santri.</li>
-                                        <li>Mengembangkan kemampuan akademik, tahfidz, dan keterampilan santri.</li>
-                                        <li>Membiasakan suasana belajar yang islami, tertib, dan penuh kasih sayang.
-                                        </li>
+                                        @foreach(($tabs['misi']['misi_items'] ?? []) as $item)
+                                            @if (trim($item) !== '')
+                                                <li>{{ $item }}</li>
+                                            @endif
+                                        @endforeach
                                     </ul>
                                 </div>
                                 <div class="card">
                                     <h3>Target Lulusan</h3>
-                                    <p class="muted">Lulusan diharapkan menjadi generasi yang berakidah lurus, mampu
-                                        membaca dan menghafal Al-Qur’an dengan baik, serta siap melanjutkan pendidikan
-                                        ke jenjang yang lebih tinggi.</p>
+                                    <p class="muted">{{ $tabs['misi']['target_lulusan'] ?? '' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -235,46 +223,25 @@
                                 <div class="card">
                                     <h3>Program Unggulan</h3>
                                     <ul class="list">
-                                        <li>Program Tahfidzul Qur’an.</li>
-                                        <li>Program Madrasah Diniyah.</li>
-                                        <li>Program penguatan bahasa Arab dan Inggris.</li>
-                                        <li>Program pembinaan akhlak dan kedisiplinan santri.</li>
-                                        <li>Program pengembangan minat bakat dan keterampilan.</li>
+                                        @foreach(($tabs['unggulan']['program_unggulan_items'] ?? []) as $item)
+                                            @if (trim($item) !== '')
+                                                <li>{{ $item }}</li>
+                                            @endif
+                                        @endforeach
                                     </ul>
                                 </div>
                                 <div class="card">
                                     <h3>Kegiatan Penunjang</h3>
                                     <ul class="list">
-                                        <li>Kegiatan keagamaan dan peringatan hari besar Islam.</li>
-                                        <li>Latihan kepemimpinan, organisasi, dan kedisiplinan.</li>
-                                        <li>Olahraga, seni, dan keterampilan lain yang bermanfaat.</li>
+                                        @foreach(($tabs['unggulan']['kegiatan_penunjang_items'] ?? []) as $item)
+                                            @if (trim($item) !== '')
+                                                <li>{{ $item }}</li>
+                                            @endif
+                                        @endforeach
                                     </ul>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="tabs__panel" role="tabpanel" id="tab-kami" aria-labelledby="kami">
-                            <div class="panelGrid">
-                                <div class="card">
-                                    <h3>Inilah Kami</h3>
-                                    <ul class="list">
-                                        <li>Sekolah yang menanamkan kejujuran dan tanggung jawab dunia-akhirat.</li>
-                                        <li>Sekolah yang membudayakan kasih sayang dan persaudaraan.</li>
-                                        <li>Sekolah yang membiasakan santri cinta Al-Qur’an.</li>
-                                        <li>Sekolah yang menyiapkan generasi yang taat kepada Allah dan Rasul-Nya.</li>
-                                    </ul>
-                                </div>
-                                <div class="card">
-                                    <h3>Tagline</h3>
-                                    <ul class="list">
-                                        <li>Pondok Pesantren Darussalam Al Hafidz.</li>
-                                        <li>Kenali Asam Atas – Kota Jambi.</li>
-                                        <li>Sekolah berkualitas dengan biaya terjangkau.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
@@ -338,8 +305,11 @@
         <section class="section section--soft" id="jadwal">
             <div class="container">
                 <div class="section__head">
-                    <h2>Jadwal Seleksi & Gelombang</h2>
-                    <p class="muted">Masih contoh. Nanti tinggal ganti tanggalnya.</p>
+                    @php
+                        $homeSetting = $homeSetting ?? \App\Models\HomeSetting::first();
+                    @endphp
+                    <h2>{{ $homeSetting->jadwal_title ?? 'Jadwal Seleksi & Gelombang' }}</h2>
+                    <p class="muted">{{ $homeSetting->jadwal_subtitle ?? 'Masih contoh. Nanti tinggal ganti tanggalnya.' }}</p>
                 </div>
 
                 <div class="tableCard" role="region" aria-label="Tabel jadwal gelombang">
@@ -354,26 +324,35 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><span class="pill pill--primary">Gelombang 1</span></td>
-                                <td>1 Feb – 15 Mar 2026</td>
-                                <td>22 Mar 2026</td>
-                                <td>25 Mar 2026</td>
-                                <td><strong>30</strong></td>
-                            </tr>
-                            <tr>
-                                <td><span class="pill">Gelombang 2</span></td>
-                                <td>1 Apr – 15 Mei 2026</td>
-                                <td>24 Mei 2026</td>
-                                <td>27 Mei 2026</td>
-                                <td><strong>30</strong></td>
-                            </tr>
+                            @php
+                                $rows = $homeSetting && $homeSetting->jadwal_rows
+                                    ? $homeSetting->jadwal_rows
+                                    : [
+                                        ['gelombang' => 'Gelombang 1', 'pendaftaran' => '1 Feb – 15 Mar 2026', 'tes' => '22 Mar 2026', 'pengumuman' => '25 Mar 2026', 'kuota' => '30'],
+                                        ['gelombang' => 'Gelombang 2', 'pendaftaran' => '1 Apr – 15 Mei 2026', 'tes' => '24 Mei 2026', 'pengumuman' => '27 Mei 2026', 'kuota' => '30'],
+                                    ];
+                            @endphp
+                            @foreach ($rows as $idx => $r)
+                                <tr>
+                                    <td>
+                                        <span class="pill {{ $idx === 0 ? 'pill--primary' : '' }}">{{ $r['gelombang'] ?? '' }}</span>
+                                    </td>
+                                    <td>{{ $r['pendaftaran'] ?? '' }}</td>
+                                    <td>{{ $r['tes'] ?? '' }}</td>
+                                    <td>{{ $r['pengumuman'] ?? '' }}</td>
+                                    <td><strong>{{ $r['kuota'] ?? '' }}</strong></td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
 
                 <div class="note">
-                    <strong>Kuota terbatas.</strong> Disarankan daftar lebih awal untuk memilih jadwal tes yang sesuai.
+                    @if ($homeSetting && $homeSetting->jadwal_note)
+                        {{ $homeSetting->jadwal_note }}
+                    @else
+                        <strong>Kuota terbatas.</strong> Disarankan daftar lebih awal untuk memilih jadwal tes yang sesuai.
+                    @endif
                 </div>
             </div>
         </section>
@@ -445,17 +424,6 @@
                         </ul>
                         <a class="btn btn--primary w-full" href="#daftar">Daftar program non formal</a>
                     </article>
-                </div>
-
-                <div class="beasiswa card">
-                    <div class="beasiswa__left">
-                        <h3>Beasiswa (Opsional)</h3>
-                        <p class="muted">Jika ada beasiswa, tuliskan kategori dan syarat ringkas di sini.</p>
-                    </div>
-                    <div class="beasiswa__right">
-                        <a class="btn btn--ghost" href="#faq">Lihat info</a>
-                        <a class="btn btn--outline" href="#kontak">Ajukan</a>
-                    </div>
                 </div>
             </div>
         </section>

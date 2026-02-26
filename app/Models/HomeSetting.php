@@ -27,5 +27,17 @@ class HomeSetting extends Model
         'biaya_nonformal_items',
         'syarat_umum_items',
         'berkas_items',
+        'jadwal_title',
+        'jadwal_subtitle',
+        'jadwal_rows',
+        'jadwal_note',
+        'program_title',
+        'program_subtitle',
+        'program_tabs',
+    ];
+
+    protected $casts = [
+        'jadwal_rows' => 'array',
+        'program_tabs' => 'array',
     ];
 }

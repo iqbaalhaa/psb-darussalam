@@ -34,8 +34,94 @@ class HomeSettingController extends Controller
             'biaya_nonformal_items' => ['nullable', 'string'],
             'syarat_umum_items' => ['nullable', 'string'],
             'berkas_items' => ['nullable', 'string'],
+            'jadwal_title' => ['nullable', 'string', 'max:255'],
+            'jadwal_subtitle' => ['nullable', 'string'],
+            'jadwal_note' => ['nullable', 'string'],
+            'jadwal_gelombang' => ['sometimes', 'array'],
+            'jadwal_gelombang.*' => ['nullable', 'string', 'max:255'],
+            'jadwal_pendaftaran' => ['sometimes', 'array'],
+            'jadwal_pendaftaran.*' => ['nullable', 'string', 'max:255'],
+            'jadwal_tes' => ['sometimes', 'array'],
+            'jadwal_tes.*' => ['nullable', 'string', 'max:255'],
+            'jadwal_pengumuman' => ['sometimes', 'array'],
+            'jadwal_pengumuman.*' => ['nullable', 'string', 'max:255'],
+            'jadwal_kuota' => ['sometimes', 'array'],
+            'jadwal_kuota.*' => ['nullable', 'string', 'max:50'],
+            'program_title' => ['nullable', 'string', 'max:255'],
+            'program_subtitle' => ['nullable', 'string'],
+            'visi_1' => ['nullable', 'string'],
+            'visi_2' => ['nullable', 'string'],
+            'misi_items' => ['sometimes', 'array'],
+            'misi_items.*' => ['nullable', 'string', 'max:255'],
+            'misi_target' => ['nullable', 'string'],
+            'unggulan_program_items' => ['sometimes', 'array'],
+            'unggulan_program_items.*' => ['nullable', 'string', 'max:255'],
+            'unggulan_kegiatan_items' => ['sometimes', 'array'],
+            'unggulan_kegiatan_items.*' => ['nullable', 'string', 'max:255'],
             'hero_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
+
+        if ($request->has('jadwal_gelombang')) {
+            $gel = $request->input('jadwal_gelombang', []);
+            $pendaftaran = $request->input('jadwal_pendaftaran', []);
+            $tes = $request->input('jadwal_tes', []);
+            $pengumuman = $request->input('jadwal_pengumuman', []);
+            $kuota = $request->input('jadwal_kuota', []);
+            $rows = [];
+            $count = max(count($gel), count($pendaftaran), count($tes), count($pengumuman), count($kuota));
+            for ($i = 0; $i < $count; $i++) {
+                $g = $gel[$i] ?? null;
+                $p = $pendaftaran[$i] ?? null;
+                $t = $tes[$i] ?? null;
+                $pn = $pengumuman[$i] ?? null;
+                $k = $kuota[$i] ?? null;
+                if (($g && trim($g) !== '') || ($p && trim($p) !== '') || ($t && trim($t) !== '') || ($pn && trim($pn) !== '') || ($k && trim($k) !== '')) {
+                    $rows[] = [
+                        'gelombang' => $g,
+                        'pendaftaran' => $p,
+                        'tes' => $t,
+                        'pengumuman' => $pn,
+                        'kuota' => $k,
+                    ];
+                }
+            }
+            $data['jadwal_rows'] = $rows;
+        }
+
+        $visi1 = $request->input('visi_1');
+        $visi2 = $request->input('visi_2');
+        $misiList = $request->input('misi_items');
+        $misiTarget = $request->input('misi_target');
+        $unggulanList = $request->input('unggulan_program_items');
+        $kegiatanList = $request->input('unggulan_kegiatan_items');
+        if ($visi1 || $visi2 || $misiList || $misiTarget || $unggulanList || $kegiatanList) {
+            if (is_string($misiList)) {
+                $misiList = preg_split("/\r\n|\r|\n/", $misiList);
+            }
+            if (is_string($unggulanList)) {
+                $unggulanList = preg_split("/\r\n|\r|\n/", $unggulanList);
+            }
+            if (is_string($kegiatanList)) {
+                $kegiatanList = preg_split("/\r\n|\r|\n/", $kegiatanList);
+            }
+            $misiList = array_values(array_filter(($misiList ?? []), fn($v) => trim((string)$v) !== ''));
+            $unggulanList = array_values(array_filter(($unggulanList ?? []), fn($v) => trim((string)$v) !== ''));
+            $kegiatanList = array_values(array_filter(($kegiatanList ?? []), fn($v) => trim((string)$v) !== ''));
+            $data['program_tabs'] = [
+                'visi' => [
+                    'visi_madrasah' => $visi1,
+                    'arah_pendidikan' => $visi2,
+                ],
+                'misi' => [
+                    'misi_items' => $misiList ?: [],
+                    'target_lulusan' => $misiTarget,
+                ],
+                'unggulan' => [
+                    'program_unggulan_items' => $unggulanList ?: [],
+                    'kegiatan_penunjang_items' => $kegiatanList ?: [],
+                ],
+            ];
+        }
 
         $setting = HomeSetting::first();
 

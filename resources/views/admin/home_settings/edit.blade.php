@@ -112,6 +112,355 @@
         </form>
       </div>
 
+      <div class="card" style="grid-column: 1 / -1;">
+        <h3>Jadwal Seleksi &amp; Gelombang</h3>
+        <form action="{{ route('admin.home-settings.update') }}" method="POST" class="form-grid">
+          @csrf
+          @method('PUT')
+
+          <div class="form-group">
+            <label for="jadwal_title" class="form-label">Judul Bagian</label>
+            <input type="text" id="jadwal_title" name="jadwal_title" class="form-control"
+              value="{{ old('jadwal_title', $setting->jadwal_title ?? 'Jadwal Seleksi & Gelombang') }}">
+          </div>
+
+          <div class="form-group">
+            <label for="jadwal_subtitle" class="form-label">Subjudul</label>
+            <textarea id="jadwal_subtitle" name="jadwal_subtitle" rows="2" class="form-control">{{ old('jadwal_subtitle', $setting->jadwal_subtitle ?? 'Masih contoh. Nanti tinggal ganti tanggalnya.') }}</textarea>
+          </div>
+
+          @php
+            $rows = old('jadwal_gelombang') ? collect(old('jadwal_gelombang'))->map(function ($val, $i) {
+                return [
+                    'gelombang' => $val,
+                    'pendaftaran' => old('jadwal_pendaftaran')[$i] ?? '',
+                    'tes' => old('jadwal_tes')[$i] ?? '',
+                    'pengumuman' => old('jadwal_pengumuman')[$i] ?? '',
+                    'kuota' => old('jadwal_kuota')[$i] ?? '',
+                ];
+            })->toArray() : ($setting->jadwal_rows ?? [
+                ['gelombang' => 'Gelombang 1', 'pendaftaran' => '1 Feb – 15 Mar 2026', 'tes' => '22 Mar 2026', 'pengumuman' => '25 Mar 2026', 'kuota' => '30'],
+                ['gelombang' => 'Gelombang 2', 'pendaftaran' => '1 Apr – 15 Mei 2026', 'tes' => '24 Mei 2026', 'pengumuman' => '27 Mei 2026', 'kuota' => '30'],
+            ]);
+            $maxRows = max(count($rows), 2);
+          @endphp
+
+          <div id="jadwal-rows" class="grid" style="grid-template-columns: 1fr;">
+            @for ($i = 0; $i < $maxRows; $i++)
+              <div class="fieldset jadwal-row" style="border:1px solid #e2e8f0; padding:12px; border-radius:12px; margin-bottom:12px;">
+                <div class="grid" style="grid-template-columns: repeat(5, minmax(0, 1fr)); gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label">Gelombang</label>
+                    <input type="text" name="jadwal_gelombang[]" class="form-control"
+                      value="{{ $rows[$i]['gelombang'] ?? '' }}" placeholder="Gelombang 1">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Pendaftaran</label>
+                    <input type="text" name="jadwal_pendaftaran[]" class="form-control"
+                      value="{{ $rows[$i]['pendaftaran'] ?? '' }}" placeholder="1 Feb – 15 Mar 2026">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Tes</label>
+                    <input type="text" name="jadwal_tes[]" class="form-control"
+                      value="{{ $rows[$i]['tes'] ?? '' }}" placeholder="22 Mar 2026">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Pengumuman</label>
+                    <input type="text" name="jadwal_pengumuman[]" class="form-control"
+                      value="{{ $rows[$i]['pengumuman'] ?? '' }}" placeholder="25 Mar 2026">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Kuota</label>
+                    <input type="text" name="jadwal_kuota[]" class="form-control"
+                      value="{{ $rows[$i]['kuota'] ?? '' }}" placeholder="30">
+                  </div>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end;">
+                  <button type="button" class="btn" data-remove-row>
+                    <i class="fa-solid fa-trash"></i>
+                    Hapus Baris
+                  </button>
+                </div>
+              </div>
+            @endfor
+          </div>
+
+          <div class="form-group" style="margin: 8px 0 16px;">
+            <button type="button" class="btn" id="btn-add-row">
+              <i class="fa-solid fa-plus"></i>
+              Tambah Baris
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label for="jadwal_note" class="form-label">Catatan</label>
+            <textarea id="jadwal_note" name="jadwal_note" rows="2" class="form-control">{{ old('jadwal_note', $setting->jadwal_note ?? 'Kuota terbatas. Disarankan daftar lebih awal untuk memilih jadwal tes yang sesuai.') }}</textarea>
+          </div>
+
+          <div class="form-group" style="margin-top: 12px;">
+            <button type="submit" class="btn primary">Simpan Jadwal</button>
+          </div>
+        </form>
+      </div>
+
+      @push('scripts')
+      <template id="tpl-jadwal-row">
+        <div class="fieldset jadwal-row" style="border:1px solid #e2e8f0; padding:12px; border-radius:12px; margin-bottom:12px;">
+          <div class="grid" style="grid-template-columns: repeat(5, minmax(0, 1fr)); gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Gelombang</label>
+              <input type="text" name="jadwal_gelombang[]" class="form-control" placeholder="Gelombang 3">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pendaftaran</label>
+              <input type="text" name="jadwal_pendaftaran[]" class="form-control" placeholder="1 Jun – 15 Jul 2026">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tes</label>
+              <input type="text" name="jadwal_tes[]" class="form-control" placeholder="22 Jul 2026">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pengumuman</label>
+              <input type="text" name="jadwal_pengumuman[]" class="form-control" placeholder="25 Jul 2026">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Kuota</label>
+              <input type="text" name="jadwal_kuota[]" class="form-control" placeholder="30">
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end;">
+            <button type="button" class="btn" data-remove-row>
+              <i class="fa-solid fa-trash"></i>
+              Hapus Baris
+            </button>
+          </div>
+        </div>
+      </template>
+      <script>
+        (function () {
+          const container = document.getElementById('jadwal-rows');
+          const btnAdd = document.getElementById('btn-add-row');
+          const tpl = document.getElementById('tpl-jadwal-row');
+
+          function attachRemoveHandlers(scope) {
+            scope.querySelectorAll('[data-remove-row]').forEach(btn => {
+              btn.addEventListener('click', () => {
+                const fieldset = btn.closest('.jadwal-row');
+                if (fieldset) fieldset.remove();
+              });
+            });
+          }
+
+          attachRemoveHandlers(container);
+
+          btnAdd?.addEventListener('click', () => {
+            const node = tpl.content.cloneNode(true);
+            container.appendChild(node);
+            attachRemoveHandlers(container);
+          });
+        })();
+      </script>
+      @endpush
+
+      <div class="card" style="grid-column: 1 / -1;">
+        <h3>Program: Visi, Misi &amp; Unggulan</h3>
+        <form action="{{ route('admin.home-settings.update') }}" method="POST" class="form-grid">
+          @csrf
+          @method('PUT')
+
+          <div class="form-group">
+            <label class="form-label" for="program_title">Judul Bagian</label>
+            <input type="text" id="program_title" name="program_title" class="form-control"
+              value="{{ old('program_title', $setting->program_title ?? 'Visi, Misi & Program Unggulan') }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="program_subtitle">Subjudul</label>
+            <textarea id="program_subtitle" name="program_subtitle" rows="2" class="form-control">{{ old('program_subtitle', $setting->program_subtitle ?? 'Ringkasan visi, misi, dan program unggulan MTs & MA Pondok Pesantren DARUSSALAM AL-HAFIDZ.') }}</textarea>
+          </div>
+
+          @php
+            $tabs = $setting->program_tabs ?? [
+                'visi' => [
+                    'visi_madrasah' => 'Membentuk generasi muslim yang berilmu, berakhlakul karimah, berdisiplin, dan bertakwa kepada Allah Subhanahu wa Ta’ala.',
+                    'arah_pendidikan' => 'Menjadikan MTs & MA Darussalam Al Hafidz sebagai lembaga pendidikan berkualitas yang memadukan ilmu umum dan keislaman dalam suasana pesantren.',
+                ],
+                'misi' => [
+                    'misi_items' => [
+                        'Menyelenggarakan pendidikan yang berlandaskan Al-Qur’an dan As-Sunnah.',
+                        'Menanamkan akhlakul karimah dan kedisiplinan dalam kehidupan santri.',
+                        'Mengembangkan kemampuan akademik, tahfidz, dan keterampilan santri.',
+                        'Membiasakan suasana belajar yang islami, tertib, dan penuh kasih sayang.',
+                    ],
+                    'target_lulusan' => 'Lulusan diharapkan menjadi generasi yang berakidah lurus, mampu membaca dan menghafal Al-Qur’an dengan baik, serta siap melanjutkan pendidikan ke jenjang yang lebih tinggi.',
+                ],
+                'unggulan' => [
+                    'program_unggulan_items' => [
+                        'Program Tahfidzul Qur’an.',
+                        'Program Madrasah Diniyah.',
+                        'Program penguatan bahasa Arab dan Inggris.',
+                        'Program pembinaan akhlak dan kedisiplinan santri.',
+                        'Program pengembangan minat bakat dan keterampilan.',
+                    ],
+                    'kegiatan_penunjang_items' => [
+                        'Kegiatan keagamaan dan peringatan hari besar Islam.',
+                        'Latihan kepemimpinan, organisasi, dan kedisiplinan.',
+                        'Olahraga, seni, dan keterampilan lain yang bermanfaat.',
+                    ],
+                ],
+            ];
+          @endphp
+
+          <div class="tabs" data-tabs>
+            <div class="tabs__list" role="tablist" aria-label="Tab program">
+              <button type="button" class="tabs__tab is-active" role="tab" aria-selected="true" aria-controls="tab-visi" id="cms-visi">Visi</button>
+              <button type="button" class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-misi" id="cms-misi">Misi</button>
+              <button type="button" class="tabs__tab" role="tab" aria-selected="false" aria-controls="tab-unggulan" id="cms-unggulan">Program Unggulan</button>
+            </div>
+
+            <div class="tabs__panels">
+              <div class="tabs__panel is-active" role="tabpanel" id="tab-visi" aria-labelledby="cms-visi">
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label" for="visi_1">Visi Madrasah</label>
+                    <textarea id="visi_1" name="visi_1" class="form-control" rows="4">{{ old('visi_1', $tabs['visi']['visi_madrasah'] ?? '') }}</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="visi_2">Arah Pendidikan</label>
+                    <textarea id="visi_2" name="visi_2" class="form-control" rows="4">{{ old('visi_2', $tabs['visi']['arah_pendidikan'] ?? '') }}</textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tabs__panel" role="tabpanel" id="tab-misi" aria-labelledby="cms-misi">
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+                  @php
+                    $misiItems = old('misi_items', $tabs['misi']['misi_items'] ?? []);
+                    if (!is_array($misiItems)) { $misiItems = []; }
+                    if (count($misiItems) === 0) { $misiItems = ['']; }
+                  @endphp
+                  <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Misi Madrasah</label>
+                    <div id="misi-items">
+                      @foreach($misiItems as $item)
+                        <div class="list-row" style="display:flex; gap:8px; margin-bottom:8px;">
+                          <input type="text" name="misi_items[]" class="form-control" value="{{ $item }}" placeholder="Tulis misi...">
+                          <button type="button" class="btn" data-remove-row><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                      @endforeach
+                    </div>
+                    <button type="button" class="btn" id="btn-add-misi" style="margin-top:6px;">
+                      <i class="fa-solid fa-plus"></i> Tambah Baris
+                    </button>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="misi_target">Target Lulusan</label>
+                    <textarea id="misi_target" name="misi_target" class="form-control" rows="6">{{ old('misi_target', $tabs['misi']['target_lulusan'] ?? '') }}</textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tabs__panel" role="tabpanel" id="tab-unggulan" aria-labelledby="cms-unggulan">
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+                  @php
+                    $unggulanProgramItems = old('unggulan_program_items', $tabs['unggulan']['program_unggulan_items'] ?? []);
+                    if (!is_array($unggulanProgramItems)) { $unggulanProgramItems = []; }
+                    if (count($unggulanProgramItems) === 0) { $unggulanProgramItems = ['']; }
+                    $unggulanKegiatanItems = old('unggulan_kegiatan_items', $tabs['unggulan']['kegiatan_penunjang_items'] ?? []);
+                    if (!is_array($unggulanKegiatanItems)) { $unggulanKegiatanItems = []; }
+                    if (count($unggulanKegiatanItems) === 0) { $unggulanKegiatanItems = ['']; }
+                  @endphp
+                  <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Program Unggulan</label>
+                    <div id="unggulan-program-items">
+                      @foreach($unggulanProgramItems as $item)
+                        <div class="list-row" style="display:flex; gap:8px; margin-bottom:8px;">
+                          <input type="text" name="unggulan_program_items[]" class="form-control" value="{{ $item }}" placeholder="Tulis program unggulan...">
+                          <button type="button" class="btn" data-remove-row><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                      @endforeach
+                    </div>
+                    <button type="button" class="btn" id="btn-add-unggulan-program" style="margin-top:6px;">
+                      <i class="fa-solid fa-plus"></i> Tambah Baris
+                    </button>
+                  </div>
+                  <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Kegiatan Penunjang</label>
+                    <div id="unggulan-kegiatan-items">
+                      @foreach($unggulanKegiatanItems as $item)
+                        <div class="list-row" style="display:flex; gap:8px; margin-bottom:8px;">
+                          <input type="text" name="unggulan_kegiatan_items[]" class="form-control" value="{{ $item }}" placeholder="Tulis kegiatan penunjang...">
+                          <button type="button" class="btn" data-remove-row><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                      @endforeach
+                    </div>
+                    <button type="button" class="btn" id="btn-add-unggulan-kegiatan" style="margin-top:6px;">
+                      <i class="fa-solid fa-plus"></i> Tambah Baris
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 12px;">
+            <button type="submit" class="btn primary">Simpan Program</button>
+          </div>
+        </form>
+      </div>
+
+      @push('scripts')
+      <script>
+        (function () {
+          function initList(containerId, addBtnId, inputName, placeholder) {
+            const container = document.getElementById(containerId);
+            const btnAdd = document.getElementById(addBtnId);
+            function attachRemove(scope) {
+              (scope || container).querySelectorAll('[data-remove-row]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                  const row = btn.closest('.list-row');
+                  if (row) row.remove();
+                });
+              });
+            }
+            attachRemove(container);
+            btnAdd?.addEventListener('click', () => {
+              const row = document.createElement('div');
+              row.className = 'list-row';
+              row.style.cssText = 'display:flex; gap:8px; margin-bottom:8px;';
+              row.innerHTML = `
+                <input type="text" name="${inputName}[]" class="form-control" placeholder="${placeholder}">
+                <button type="button" class="btn" data-remove-row><i class="fa-solid fa-trash"></i></button>
+              `;
+              container.appendChild(row);
+              attachRemove(row);
+            });
+          }
+          initList('misi-items', 'btn-add-misi', 'misi_items', 'Tulis misi...');
+          initList('unggulan-program-items', 'btn-add-unggulan-program', 'unggulan_program_items', 'Tulis program unggulan...');
+          initList('unggulan-kegiatan-items', 'btn-add-unggulan-kegiatan', 'unggulan_kegiatan_items', 'Tulis kegiatan penunjang...');
+
+          document.querySelectorAll('.tabs [role="tab"]').forEach(tab => {
+            tab.addEventListener('click', () => {
+              const root = tab.closest('.tabs');
+              const list = root.querySelectorAll('.tabs__tab');
+              const panels = root.querySelectorAll('.tabs__panel');
+              list.forEach(b => {
+                b.classList.remove('is-active');
+                b.setAttribute('aria-selected', 'false');
+              });
+              panels.forEach(p => p.classList.remove('is-active'));
+              tab.classList.add('is-active');
+              tab.setAttribute('aria-selected', 'true');
+              const id = tab.getAttribute('aria-controls');
+              const panel = root.querySelector('#' + id);
+              if (panel) panel.classList.add('is-active');
+            });
+          });
+        })();
+      </script>
+      @endpush
+
       <div class="card" style="grid-column: span 5 / span 5;">
         <h3>WhatsApp Info</h3>
         <form action="{{ route('admin.home-settings.update') }}" method="POST" class="form-grid">
